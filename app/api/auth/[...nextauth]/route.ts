@@ -10,9 +10,11 @@ export const authOptions: NextAuthOptions = {
                 params: {
                     scope: 'openid email profile https://www.googleapis.com/auth/drive.file',
                     access_type: 'offline',
-                    prompt: 'consent',
+                    // prompt: 'consent' -> Removed to prevent re-consent loop with SSO
                 },
             },
+            // SSO Compatibility: Only use PKCE, skip state check to avoid mismatch after multiple redirects
+            checks: ['pkce'],
         }),
     ],
     callbacks: {
@@ -33,6 +35,46 @@ export const authOptions: NextAuthOptions = {
     },
     pages: {
         signIn: '/',
+    },
+    // SSO Compatibility: Trust Vercel/Proxy host
+    trustHost: true,
+    // SSO Compatibility: Allow cross-site cookies for IdP redirects
+    cookies: {
+        sessionToken: {
+            name: `next-auth.session-token`,
+            options: {
+                httpOnly: true,
+                sameSite: 'none',
+                path: '/',
+                secure: true,
+            },
+        },
+        callbackUrl: {
+            name: `next-auth.callback-url`,
+            options: {
+                sameSite: 'none',
+                path: '/',
+                secure: true,
+            },
+        },
+        csrfToken: {
+            name: `next-auth.csrf-token`,
+            options: {
+                httpOnly: true,
+                sameSite: 'none',
+                path: '/',
+                secure: true,
+            },
+        },
+        pkceCodeVerifier: {
+            name: `next-auth.pkce.code_verifier`,
+            options: {
+                httpOnly: true,
+                sameSite: 'none',
+                path: '/',
+                secure: true,
+            },
+        },
     },
 };
 
