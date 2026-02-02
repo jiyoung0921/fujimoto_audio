@@ -97,3 +97,30 @@ npm run dev
 ```
 
 ブラウザで [http://localhost:3000](http://localhost:3000) を開いてください。
+
+## 安全な開発フロー (推奨)
+
+新機能の追加や修正を行う際は、メイン環境（本番）を壊さないよう、以下の手順で行うことを推奨します。
+
+1. **作業用ブランチの作成**:
+   ```bash
+   git checkout -b feature/新機能名
+   # 例: git checkout -b feature/add-dark-mode
+   ```
+
+2. **開発・ローカルテスト**:
+   コードを編集し、`npm run dev` で動作確認を行います。
+
+3. **変更の保存（コミット）**:
+   ```bash
+   git add .
+   git commit -m "機能追加: ダークモードの実装"
+   ```
+
+4. **本番への反映**:
+   問題なければメインブランチに統合し、プッシュしてデプロイします。
+   ```bash
+   git checkout main
+   git merge feature/新機能名
+   git push origin main
+   ```
