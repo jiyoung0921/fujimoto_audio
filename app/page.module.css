@@ -1,253 +1,209 @@
 /* =========================================
-   Page Styles - Duolingo Style
+   Home Page - Warm Minimalist
+   ========================================= */
+
+/* Loading State */
+.loading {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+}
+
+.loading p {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* =========================================
+   Welcome Screen (Not Logged In)
    ========================================= */
 
 .welcome {
-    min-height: 100vh;
+    min-height: 70vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    background: linear-gradient(180deg, var(--bg-app) 0%, #1a3d6d 100%);
-}
-
-.welcomeCard {
-    background: var(--duo-white);
-    border-radius: var(--radius-xl);
-    padding: 48px 32px;
-    max-width: 420px;
     text-align: center;
-    box-shadow: var(--shadow-lg);
-    animation: slideUp 0.5s ease-out;
+    padding: var(--space-6);
 }
 
 .welcomeIcon {
     font-size: 72px;
-    margin-bottom: 24px;
-    animation: bounce 1s ease infinite;
+    margin-bottom: var(--space-4);
+    animation: bounce 2s infinite;
 }
 
 .welcomeTitle {
-    font-size: 28px;
+    font-size: 36px;
     font-weight: 800;
-    margin-bottom: 16px;
     color: var(--text-primary);
+    margin-bottom: var(--space-3);
 }
 
 .welcomeText {
     font-size: 16px;
     color: var(--text-secondary);
-    margin-bottom: 12px;
-    line-height: 1.6;
+    line-height: 1.7;
+    margin-bottom: var(--space-6);
+}
+
+.welcomeFeatures {
+    display: flex;
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+}
+
+.feature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.feature span:first-child {
+    font-size: 32px;
+}
+
+.feature span:last-child {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
 }
 
 .welcomeHint {
     font-size: 15px;
-    color: var(--duo-blue);
     font-weight: 700;
-    margin-top: 32px;
-    padding: 16px 20px;
-    background: rgba(28, 176, 246, 0.1);
-    border-radius: var(--radius-lg);
-    border: 2px dashed var(--duo-blue);
+    color: var(--primary);
+    padding: var(--space-3) var(--space-5);
+    background: rgba(0, 201, 167, 0.1);
+    border-radius: var(--border-radius-full);
 }
 
-/* Hero Section */
-.hero {
-    text-align: center;
-    margin-bottom: 32px;
-    padding: 24px 0;
-}
+/* =========================================
+   Main Page
+   ========================================= */
 
-.title {
-    font-size: 32px;
-    font-weight: 800;
-    color: var(--duo-white);
-    margin-bottom: 8px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.subtitle {
-    font-size: 16px;
-    color: rgba(255, 255, 255, 0.85);
-    font-weight: 600;
-}
-
-/* Section Title */
-.sectionTitle {
-    font-size: 20px;
-    font-weight: 800;
-    margin-bottom: 20px;
-    color: var(--text-primary);
+.page {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+/* Section */
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.sectionTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-xl);
+    padding: var(--space-4);
 }
 
 /* Divider */
 .divider {
-    text-align: center;
-    font-size: 16px;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.7);
-    margin: 24px 0;
-    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .divider::before,
 .divider::after {
     content: '';
-    position: absolute;
-    top: 50%;
-    width: 30%;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.3);
+    flex: 1;
+    height: 1px;
+    background: var(--border-color);
 }
 
-.divider::before {
-    left: 0;
+/* =========================================
+   Result Section
+   ========================================= */
+
+.resultSection {
+    background: rgba(0, 184, 148, 0.06);
+    border: 2px solid var(--success);
+    border-radius: var(--border-radius-xl);
+    padding: var(--space-5);
 }
 
-.divider::after {
-    right: 0;
-}
-
-/* Result Card */
-.result {
-    background: linear-gradient(135deg, rgba(88, 204, 2, 0.1) 0%, rgba(137, 226, 25, 0.1) 100%);
-    border: 3px solid var(--duo-green);
-    position: relative;
-    overflow: hidden;
-}
-
-.result::before {
-    content: '🎉';
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    font-size: 48px;
-    opacity: 0.3;
-}
-
-.resultTitle {
-    font-size: 24px;
-    font-weight: 800;
-    color: var(--duo-green);
-    margin-bottom: 20px;
-    text-align: center;
+.resultHeader {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
 }
 
-.transcription {
-    background: var(--duo-white);
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    margin-bottom: 20px;
-    border: 2px solid var(--border);
+.resultHeader h2 {
+    font-size: 20px;
+    color: var(--success);
 }
 
-.transcription h3 {
-    font-size: 16px;
+.successIcon {
+    color: var(--success);
+}
+
+.transcriptionBox {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+    border: 1px solid var(--border-color);
+}
+
+.transcriptionBox h4 {
+    font-size: 13px;
     font-weight: 700;
-    margin-bottom: 12px;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin-bottom: var(--space-3);
 }
 
-.transcription p {
+.transcriptionBox p {
+    font-size: 15px;
     line-height: 1.8;
     color: var(--text-primary);
     white-space: pre-wrap;
-    font-size: 16px;
-}
-
-/* Loading */
-.loading {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    color: var(--duo-white);
-    background: var(--bg-app);
-}
-
-.loading p {
-    font-weight: 700;
-    font-size: 18px;
-}
-
-/* Processing */
-.processing {
-    text-align: center;
-    padding: 40px;
-}
-
-.processing p {
-    margin-top: 15px;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.processingHint {
-    font-size: 14px !important;
-    color: var(--text-secondary) !important;
-    font-weight: 600 !important;
 }
 
 /* =========================================
    Responsive
    ========================================= */
 
-@media (max-width: 768px) {
-    .welcomeCard {
-        padding: 36px 24px;
-        margin: 0 16px;
-    }
-
-    .welcomeTitle {
-        font-size: 24px;
+@media (max-width: 480px) {
+    .welcome {
+        padding: var(--space-5);
     }
 
     .welcomeIcon {
         font-size: 56px;
     }
 
-    .title {
-        font-size: 26px;
+    .welcomeTitle {
+        font-size: 28px;
     }
 
-    .subtitle {
-        font-size: 14px;
+    .welcomeFeatures {
+        gap: var(--space-4);
     }
 
-    .sectionTitle {
-        font-size: 18px;
-    }
-
-    .divider::before,
-    .divider::after {
-        width: 20%;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero {
-        margin-bottom: 20px;
-        padding: 16px 0;
-    }
-
-    .title {
-        font-size: 22px;
-    }
-
-    .welcomeCard {
-        padding: 28px 20px;
+    .feature span:first-child {
+        font-size: 28px;
     }
 }

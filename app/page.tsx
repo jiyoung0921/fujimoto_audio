@@ -6,6 +6,7 @@ import AudioRecorder from '@/components/AudioRecorder';
 import FileUploader from '@/components/FileUploader';
 import ProgressModal from '@/components/ProgressModal';
 import { ProcessingStatus, ErrorDetail } from '@/types';
+import { CheckCircle } from '@/components/Icons';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -152,7 +153,7 @@ export default function Home() {
     if (status === 'loading') {
         return (
             <div className={styles.loading}>
-                <div className="loading"></div>
+                <div className="loading-spinner"></div>
                 <p>読み込み中...</p>
             </div>
         );
@@ -161,18 +162,30 @@ export default function Home() {
     if (!session) {
         return (
             <div className={styles.welcome}>
-                <div className={styles.welcomeCard}>
-                    <h1 className={styles.welcomeTitle}>🎤 音声文字起こしアプリ</h1>
-                    <p className={styles.welcomeText}>
-                        音声を録音またはアップロードして、AIが自動で文字起こしを行います。
-                    </p>
-                    <p className={styles.welcomeText}>
-                        結果はDOCXファイルとしてGoogle Driveに保存されます。
-                    </p>
-                    <p className={styles.welcomeHint}>
-                        始めるには、右上の「Googleでログイン」をクリックしてください。
-                    </p>
+                <div className={styles.welcomeIcon}>🎤</div>
+                <h1 className={styles.welcomeTitle}>VoiceDoc</h1>
+                <p className={styles.welcomeText}>
+                    音声を録音またはアップロードして、
+                    <br />
+                    AIが自動で文字起こしを行います
+                </p>
+                <div className={styles.welcomeFeatures}>
+                    <div className={styles.feature}>
+                        <span>🎙</span>
+                        <span>録音</span>
+                    </div>
+                    <div className={styles.feature}>
+                        <span>📄</span>
+                        <span>文字起こし</span>
+                    </div>
+                    <div className={styles.feature}>
+                        <span>☁️</span>
+                        <span>Drive保存</span>
+                    </div>
                 </div>
+                <p className={styles.welcomeHint}>
+                    ログインして始めましょう
+                </p>
             </div>
         );
     }
@@ -186,48 +199,52 @@ export default function Home() {
                 onClose={closeModal}
             />
 
-            <div className="container">
-                <div className={styles.hero}>
-                    <h1 className={styles.title}>音声文字起こし</h1>
-                    <p className={styles.subtitle}>
-                        音声を録音またはアップロードして、自動で文字起こしを行います
-                    </p>
+            <div className={styles.page}>
+                {/* Section: Record */}
+                <section className={styles.section}>
+                    <h2 className={styles.sectionTitle}>🎙 録音</h2>
+                    <div className={styles.card}>
+                        <AudioRecorder
+                            onRecordingComplete={(blob, filename) =>
+                                handleFileProcess(blob, filename)
+                            }
+                        />
+                    </div>
+                </section>
+
+                {/* Divider */}
+                <div className={styles.divider}>
+                    <span>または</span>
                 </div>
 
-                <div className="card fade-in">
-                    <h2 className={styles.sectionTitle}>🎙 音声を録音</h2>
-                    <AudioRecorder
-                        onRecordingComplete={(blob, filename) =>
-                            handleFileProcess(blob, filename)
-                        }
-                    />
-                </div>
-
-                <div className={styles.divider}>または</div>
-
-                <div className="card fade-in">
-                    <h2 className={styles.sectionTitle}>📁 ファイルをアップロード</h2>
+                {/* Section: Upload */}
+                <section className={styles.section}>
+                    <h2 className={styles.sectionTitle}>📁 ファイルアップロード</h2>
                     <FileUploader
                         onFileSelected={(file) => handleFileProcess(file, file.name)}
                     />
-                </div>
+                </section>
 
+                {/* Result */}
                 {result && (
-                    <div className={`card ${styles.result} fade-in`}>
-                        <h2 className={styles.resultTitle}>✅ 完了しました！</h2>
-                        <div className={styles.transcription}>
-                            <h3>文字起こし結果:</h3>
+                    <section className={`${styles.section} ${styles.resultSection} fade-in`}>
+                        <div className={styles.resultHeader}>
+                            <CheckCircle size={28} weight="fill" className={styles.successIcon} />
+                            <h2>完了しました！</h2>
+                        </div>
+                        <div className={styles.transcriptionBox}>
+                            <h4>文字起こし結果</h4>
                             <p>{result.transcription}</p>
                         </div>
                         <a
                             href={result.docxUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn btn-primary"
+                            className="btn btn-primary btn-block"
                         >
                             📄 Google DriveでDOCXを開く
                         </a>
-                    </div>
+                    </section>
                 )}
             </div>
         </>

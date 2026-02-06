@@ -1,0 +1,82 @@
+/* =========================================
+   Bottom Navigation - iOS Style
+   ========================================= */
+
+.bottomNav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.navContainer {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: var(--space-2) 0;
+}
+
+.navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-4);
+    text-decoration: none;
+    color: var(--text-muted);
+    transition: color var(--transition-fast);
+    border-radius: var(--border-radius-md);
+    min-width: 64px;
+}
+
+.navItem:hover {
+    color: var(--text-secondary);
+}
+
+.navItem.active {
+    color: var(--primary);
+}
+
+.navItem.active .icon {
+    transform: scale(1.1);
+}
+
+.icon {
+    transition: transform var(--transition-fast);
+}
+
+.label {
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Recording Tab Special Style */
+.navItem:nth-child(2) {
+    position: relative;
+}
+
+.navItem:nth-child(2).active {
+    color: var(--secondary);
+}
+
+/* =========================================
+   Responsive
+   ========================================= */
+
+@media (max-width: 380px) {
+    .navItem {
+        padding: var(--space-2) var(--space-3);
+        min-width: 56px;
+    }
+
+    .label {
+        font-size: 10px;
+    }
+}

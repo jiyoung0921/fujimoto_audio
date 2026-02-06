@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { generateFilename } from '@/lib/utils';
+import { Microphone, Play, Pause, Stop } from './Icons';
 import styles from './AudioRecorder.module.css';
 
 interface AudioRecorderProps {
@@ -49,7 +50,6 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
             setIsPaused(false);
             setRecordingTime(0);
 
-            // Start timer
             timerRef.current = setInterval(() => {
                 setRecordingTime((prev) => prev + 1);
             }, 1000);
@@ -99,46 +99,58 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
 
     return (
         <div className={styles.recorder}>
-            <div className={styles.visualizer}>
-                {isRecording && !isPaused && (
-                    <div className={styles.waveform}>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
+            {/* Main Recording Button */}
+            <button
+                className={`${styles.recordButton} ${isRecording ? styles.recording : ''}`}
+                onClick={isRecording ? stopRecording : startRecording}
+            >
+                {isRecording ? (
+                    <Stop size={48} weight="fill" />
+                ) : (
+                    <Microphone size={48} weight="fill" />
                 )}
-                {isPaused && <div className={styles.pausedIcon}>⏸</div>}
-                {!isRecording && <div className={styles.micIcon}>🎤</div>}
-            </div>
+            </button>
 
+            {/* Timer */}
             {isRecording && (
-                <div className={styles.timer}>{formatTime(recordingTime)}</div>
+                <div className={styles.timer}>
+                    <span className={styles.timerDot}></span>
+                    {formatTime(recordingTime)}
+                </div>
             )}
 
-            <div className={styles.controls}>
-                {!isRecording ? (
-                    <button onClick={startRecording} className="btn btn-primary">
-                        🎙 録音開始
-                    </button>
-                ) : (
-                    <>
-                        {!isPaused ? (
-                            <button onClick={pauseRecording} className="btn btn-secondary">
-                                ⏸ 一時停止
-                            </button>
-                        ) : (
-                            <button onClick={resumeRecording} className="btn btn-success">
-                                ▶️ 再開
-                            </button>
-                        )}
-                        <button onClick={stopRecording} className="btn btn-danger">
-                            ⏹ 停止
+            {/* Hint Text */}
+            {!isRecording && (
+                <p className={styles.hint}>タップして録音開始</p>
+            )}
+
+            {/* Control Buttons (visible when recording) */}
+            {isRecording && (
+                <div className={styles.controls}>
+                    {!isPaused ? (
+                        <button onClick={pauseRecording} className="btn btn-outline">
+                            <Pause size={20} />
+                            一時停止
                         </button>
-                    </>
-                )}
-            </div>
+                    ) : (
+                        <button onClick={resumeRecording} className="btn btn-primary">
+                            <Play size={20} />
+                            再開
+                        </button>
+                    )}
+                </div>
+            )}
+
+            {/* Waveform Animation */}
+            {isRecording && !isPaused && (
+                <div className={styles.waveform}>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            )}
         </div>
     );
 }

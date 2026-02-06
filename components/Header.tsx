@@ -1,7 +1,7 @@
 'use client';
 
 import { useSession, signIn, signOut } from 'next-auth/react';
-import Link from 'next/link';
+import { User, SignOut } from './Icons';
 import styles from './Header.module.css';
 
 export default function Header() {
@@ -10,35 +10,34 @@ export default function Header() {
     return (
         <header className={styles.header}>
             <div className={styles.container}>
-                <Link href="/" className={styles.logo}>
-                    🎤 音声文字起こし
-                </Link>
+                <div className={styles.logo}>
+                    <span className={styles.logoIcon}>🎤</span>
+                    <span className={styles.logoText}>VoiceDoc</span>
+                </div>
 
-                {session && (
-                    <nav className={styles.nav}>
-                        <Link href="/" className={styles.navLink}>
-                            ホーム
-                        </Link>
-                        <Link href="/history" className={styles.navLink}>
-                            履歴
-                        </Link>
-                        <Link href="/settings" className={styles.navLink}>
-                            設定
-                        </Link>
-                    </nav>
-                )}
-
-                <div className={styles.user}>
+                <div className={styles.auth}>
                     {session ? (
-                        <>
-                            <span className={styles.userName}>{session.user?.name || session.user?.email}</span>
-                            <button onClick={() => signOut()} className="btn btn-secondary">
-                                ログアウト
+                        <div className={styles.userSection}>
+                            <div className={styles.userInfo}>
+                                <User size={20} />
+                                <span className={styles.userName}>
+                                    {session.user?.name?.split(' ')[0] || 'User'}
+                                </span>
+                            </div>
+                            <button
+                                onClick={() => signOut()}
+                                className={styles.logoutBtn}
+                                aria-label="ログアウト"
+                            >
+                                <SignOut size={20} />
                             </button>
-                        </>
+                        </div>
                     ) : (
-                        <button onClick={() => signIn('google')} className="btn btn-primary">
-                            Googleでログイン
+                        <button
+                            onClick={() => signIn('google')}
+                            className="btn btn-primary btn-sm"
+                        >
+                            ログイン
                         </button>
                     )}
                 </div>

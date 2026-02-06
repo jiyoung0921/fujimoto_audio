@@ -1,131 +1,102 @@
 /* =========================================
-   Header - Duolingo Style
+   Header - Minimal Style
    ========================================= */
 
 .header {
-    background: var(--duo-white);
-    border-bottom: 2px solid var(--border);
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 50;
 }
 
 .container {
-    max-width: 600px;
+    max-width: 480px;
     margin: 0 auto;
-    padding: 12px 20px;
+    padding: var(--space-3) var(--space-5);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
 }
 
 /* Logo */
 .logo {
-    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.logoIcon {
+    font-size: 24px;
+}
+
+.logoText {
+    font-size: 18px;
     font-weight: 800;
-    color: var(--duo-green);
-    text-decoration: none;
-    transition: transform 0.2s ease;
+    color: var(--text-primary);
+}
+
+/* Auth Section */
+.auth {
     display: flex;
     align-items: center;
-    gap: 6px;
 }
 
-.logo:hover {
-    transform: scale(1.05);
-}
-
-.logo:active {
-    transform: scale(0.98);
-}
-
-/* Navigation */
-.nav {
+.userSection {
     display: flex;
-    gap: 8px;
-    flex: 1;
-    justify-content: center;
+    align-items: center;
+    gap: var(--space-3);
 }
 
-.navLink {
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
     color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 14px;
-    padding: 10px 16px;
-    border-radius: var(--radius-lg);
-    transition: all 0.2s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.navLink:hover {
-    background: var(--duo-gray-100);
-    color: var(--duo-blue);
-}
-
-.navLink.active {
-    background: rgba(28, 176, 246, 0.1);
-    color: var(--duo-blue);
-}
-
-/* User Section */
-.user {
-    display: flex;
-    align-items: center;
-    gap: 12px;
 }
 
 .userName {
-    font-weight: 700;
     font-size: 14px;
-    color: var(--text-primary);
-    max-width: 120px;
+    font-weight: 600;
+    max-width: 100px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.user .btn {
-    padding: 10px 16px;
-    font-size: 13px;
+.logoutBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--border-radius-full);
+    background: var(--gray-100);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.logoutBtn:hover {
+    background: var(--gray-200);
+    color: var(--text-primary);
+}
+
+.logoutBtn:active {
+    transform: scale(0.95);
 }
 
 /* =========================================
    Responsive
    ========================================= */
 
-@media (max-width: 768px) {
-    .container {
-        flex-wrap: wrap;
-        padding: 10px 16px;
-    }
-
-    .logo {
-        font-size: 18px;
-    }
-
-    .nav {
-        order: 3;
-        width: 100%;
-        justify-content: center;
-        padding-top: 12px;
-        border-top: 2px solid var(--border);
-        margin-top: 8px;
-    }
-
-    .navLink {
-        padding: 8px 12px;
-        font-size: 13px;
-    }
-
+@media (max-width: 380px) {
     .userName {
         display: none;
     }
 
-    .user .btn {
-        padding: 8px 12px;
-        font-size: 12px;
+    .logoText {
+        font-size: 16px;
     }
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Upload, Folder } from './Icons';
 import styles from './FileUploader.module.css';
 
 interface FileUploaderProps {
@@ -46,22 +47,25 @@ export default function FileUploader({ onFileSelected }: FileUploaderProps) {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
             >
-                <div className={styles.icon}>📁</div>
-                <p className={styles.text}>
-                    ファイルをドラッグ&ドロップ
-                </p>
-                <p className={styles.or}>または</p>
-                <label className="btn btn-primary" style={{ cursor: 'pointer' }}>
-                    📂 ファイルを選択
+                <div className={styles.iconWrapper}>
+                    <Upload size={32} />
+                </div>
+                <p className={styles.title}>ファイルをアップロード</p>
+                <p className={styles.subtitle}>ドラッグ&ドロップ または</p>
+
+                <label className={`btn btn-outline ${styles.selectBtn}`}>
+                    <Folder size={18} />
+                    ファイルを選択
                     <input
                         type="file"
                         accept="audio/*,video/*,.mp3,.m4a,.wav,.ogg,.webm,.mp4,.aac,*/*"
                         onChange={handleFileChange}
-                        style={{ display: 'none' }}
+                        className={styles.hiddenInput}
                     />
                 </label>
+
                 <p className={styles.formats}>
-                    対応形式: MP3, M4A, WAV, OGG, WebM
+                    MP3, M4A, WAV, OGG, WebM
                 </p>
             </div>
         </div>
