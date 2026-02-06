@@ -1,31 +1,56 @@
+/* =========================================
+   FileUploader - Duolingo Style
+   ========================================= */
+
 .container {
     width: 100%;
 }
 
 .dropzone {
-    border: 3px dashed var(--border);
-    border-radius: 15px;
-    padding: 50px 30px;
+    border: 3px dashed var(--duo-blue);
+    border-radius: var(--radius-xl);
+    padding: 48px 24px;
     text-align: center;
     transition: all 0.3s ease;
-    background: var(--bg-secondary);
+    background: linear-gradient(135deg, rgba(28, 176, 246, 0.03) 0%, rgba(28, 176, 246, 0.08) 100%);
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.dropzone::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(28, 176, 246, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.dropzone:hover::before {
+    left: 100%;
 }
 
 .dropzone:hover {
-    border-color: var(--primary);
-    background: rgba(102, 126, 234, 0.05);
+    border-color: var(--duo-blue);
+    background: linear-gradient(135deg, rgba(28, 176, 246, 0.08) 0%, rgba(28, 176, 246, 0.15) 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .dropzone.dragging {
-    border-color: var(--primary);
-    background: rgba(102, 126, 234, 0.1);
+    border-color: var(--duo-green);
+    background: linear-gradient(135deg, rgba(88, 204, 2, 0.1) 0%, rgba(88, 204, 2, 0.2) 100%);
     transform: scale(1.02);
+    border-style: solid;
 }
 
+/* Icon */
 .icon {
-    font-size: 64px;
-    margin-bottom: 20px;
+    font-size: 56px;
+    margin-bottom: 16px;
     animation: float 3s ease-in-out infinite;
 }
 
@@ -37,33 +62,46 @@
     }
 
     50% {
-        transform: translateY(-10px);
+        transform: translateY(-8px);
     }
 }
 
+/* Text */
 .text {
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .or {
     font-size: 14px;
+    font-weight: 600;
     color: var(--text-secondary);
-    margin: 15px 0;
+    margin: 16px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
+/* Formats hint */
 .formats {
-    margin-top: 15px;
+    margin-top: 20px;
     font-size: 13px;
     color: var(--text-secondary);
-    font-style: italic;
+    font-weight: 600;
+    padding: 8px 16px;
+    background: var(--duo-gray-100);
+    border-radius: var(--radius-full);
+    display: inline-block;
 }
+
+/* =========================================
+   Responsive
+   ========================================= */
 
 @media (max-width: 768px) {
     .dropzone {
-        padding: 40px 20px;
+        padding: 36px 20px;
     }
 
     .icon {
