@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import { useState } from 'react';
 import AudioRecorder from '@/components/AudioRecorder';
 import FileUploader from '@/components/FileUploader';
@@ -143,9 +143,12 @@ export default function Home() {
                         <span>文字起こし</span>
                     </div>
                 </div>
-                <p className={styles.welcomeHint}>
+                <button
+                    className={styles.welcomeHint}
+                    onClick={() => signIn('google')}
+                >
                     ログインして始めましょう
-                </p>
+                </button>
             </div>
         );
     }

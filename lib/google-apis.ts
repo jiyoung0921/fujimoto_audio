@@ -55,7 +55,16 @@ export async function transcribeAudio(audioFilePath: string): Promise<string> {
 
         return transcription.trim();
     } catch (error) {
-        console.error('Transcription error:', error);
+        console.error('Transcription error in google-apis.ts:', error);
+        console.error('Error details:', {
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined,
+            audioFilePath,
+        });
+
+        if (error instanceof Error) {
+            throw error; // 元のエラーを投げて、より詳細な情報を保持
+        }
         throw new Error('文字起こしに失敗しました');
     }
 }

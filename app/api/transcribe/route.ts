@@ -77,8 +77,26 @@ export async function POST(request: NextRequest): Promise<NextResponse<Transcrib
         });
     } catch (error) {
         console.error('Transcription error:', error);
+        console.error('Error details:', {
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined,
+            filePath: request.body ? JSON.stringify(request.body) : 'No body',
+        });
+
+        // エラーメッセージをより具体的に
+        let errorMessage = '文字起こし処理に失敗しました';
+        if (error instanceof Error) {
+            if (error.message.includes('API key')) {
+                errorMessage = 'API キーの設定に問題があります';
+            } else if (error.message.includes('quota')) {
+                errorMessage = 'API の使用制限に達しました';
+            } else if (error.message.includes('network')) {
+                errorMessage = 'ネットワークエラーが発生しました';
+            }
+        }
+
         return NextResponse.json(
-            { success: false, error: '文字起こし処理に失敗しました' },
+            { success: false, error: errorMessage },
             { status: 500 }
         );
     }
