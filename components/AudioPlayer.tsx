@@ -78,6 +78,9 @@ export default function AudioPlayer({ src, filename }: AudioPlayerProps) {
             </div>
         );
     }
+    // Removed the 'if (loading && !duration)' block as per instruction.
+    // The component will now always render the player UI,
+    // potentially with duration as 0 initially if metadata hasn't loaded.
 
     return (
         <div className={styles.player}>
@@ -85,13 +88,14 @@ export default function AudioPlayer({ src, filename }: AudioPlayerProps) {
 
             <button
                 onClick={togglePlay}
-                className={styles.playButton}
+                className="btn btn-primary"
                 aria-label={isPlaying ? '一時停止' : '再生'}
+                title={isPlaying ? '一時停止' : '再生'}
             >
                 {isPlaying ? (
-                    <PauseCircle size={32} color="var(--primary)" />
+                    <PauseCircle size={18} color="white" />
                 ) : (
-                    <PlayCircle size={32} color="var(--primary)" />
+                    <PlayCircle size={18} color="white" />
                 )}
             </button>
 

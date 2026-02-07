@@ -2,14 +2,19 @@
 
 import { useSession, signIn } from 'next-auth/react';
 import { useState } from 'react';
+import type { TabType } from '@/types';
 import AudioRecorder from '@/components/AudioRecorder';
 import FileUploader from '@/components/FileUploader';
 import ProgressModal from '@/components/ProgressModal';
 import { ProcessingStatus, ErrorDetail } from '@/types';
-import { Microphone, CloudUpload, CheckCircle } from '@/components/Icons';
+import { Microphone, CloudUpload, CheckCircle, User, ArrowRight } from '@/components/Icons';
 import styles from './page.module.css';
 
-export default function Home() {
+interface HomeProps {
+    onTabChange?: (tab: TabType) => void;
+}
+
+export default function Home({ onTabChange }: HomeProps = {}) {
     const { data: session, status } = useSession();
     const [isProcessing, setIsProcessing] = useState(false);
     const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>({
@@ -94,6 +99,10 @@ export default function Home() {
 
             setTimeout(() => {
                 setIsProcessing(false);
+                // Auto navigate to history tab after recording completes
+                if (onTabChange) {
+                    onTabChange('history');
+                }
             }, 2000);
         } catch (err: any) {
             console.error('Processing error:', err);
@@ -147,7 +156,9 @@ export default function Home() {
                     className={styles.welcomeHint}
                     onClick={() => signIn('google')}
                 >
-                    ログインして始めましょう
+                    <User size={20} />
+                    <span>ログインして始めましょう</span>
+                    <ArrowRight size={20} />
                 </button>
             </div>
         );

@@ -68,3 +68,5 @@ export interface RenameRequest {
     newName: string;
     driveFileId: string;
 }
+
+export type TabType = 'home' | 'history' | 'settings';

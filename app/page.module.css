@@ -69,20 +69,32 @@
 }
 
 .welcomeHint {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--primary);
-    background: none;
+    margin-top: var(--space-6);
+    padding: var(--space-5) var(--space-6);
+    background: var(--primary);
+    color: white;
     border: none;
+    border-radius: var(--border-radius-full);
+    font-size: 16px;
+    font-weight: 700;
     cursor: pointer;
-    padding: var(--space-3) var(--space-5);
-    border-radius: var(--border-radius-lg);
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    box-shadow: 0 4px 0 var(--primary-dark);
 }
 
 .welcomeHint:hover {
-    background: rgba(0, 201, 167, 0.1);
+    background: var(--primary-light);
     transform: translateY(-2px);
+    box-shadow: 0 6px 0 var(--primary-dark);
+}
+
+.welcomeHint:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--primary-dark);
 }
 
 /* =========================================
