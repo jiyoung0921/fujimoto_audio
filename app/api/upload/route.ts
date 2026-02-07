@@ -23,9 +23,18 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
         const uploadsDir = path.join('/tmp', 'uploads');
         await fs.mkdir(uploadsDir, { recursive: true });
 
-        // Save file
+        // Save file with readable timestamp
         const buffer = Buffer.from(await file.arrayBuffer());
-        const filename = `${Date.now()}_${file.name}`;
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+
+        const timestamp = `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`;
+        const filename = `${timestamp}_${file.name}`;
         const filepath = path.join(uploadsDir, filename);
         await fs.writeFile(filepath, buffer);
 
