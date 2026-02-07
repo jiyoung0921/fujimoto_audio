@@ -46,13 +46,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<Transcrib
             return NextResponse.json({ success: false, error: '文字起こし結果が空です' }, { status: 400 });
         }
 
-        // Save audio file to public/uploads directory
-        const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+        // Save audio file to /tmp directory (Vercel compatible)
+        const uploadsDir = '/tmp/uploads';
         await fs.mkdir(uploadsDir, { recursive: true });
 
         const audioFileName = `audio_${Date.now()}_${path.basename(originalName)}`;
         const audioSavePath = path.join(uploadsDir, audioFileName);
-        const audioPublicPath = `/uploads/${audioFileName}`;
+        const audioPublicPath = `/tmp/uploads/${audioFileName}`; // Store the actual path in DB
 
         // Copy audio file to uploads directory
         await fs.copyFile(filePath, audioSavePath);
