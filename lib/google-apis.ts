@@ -69,6 +69,73 @@ export async function transcribeAudio(audioFilePath: string): Promise<string> {
     }
 }
 
+// AI Summary and Structure Generation
+export async function summarizeAndStructure(text: string): Promise<{
+    summary: string;
+    sections: Array<{ heading: string; content: string }>;
+}> {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+    try {
+        const prompt = `以下の文字起こしテキストを分析して、以下のJSON形式で返してください：
+
+{
+  "summary": "全体の要約（200〜300文字程度）",
+  "sections": [
+    {
+      "heading": "セクション1の見出し（簡潔に）",
+      "content": "セクション1の内容"
+    },
+    {
+      "heading": "セクション2の見出し（簡潔に）",
+      "content": "セクション2の内容"
+    }
+  ]
+}
+
+指示:
+- 要約は重要なポイントを簡潔にまとめてください
+- セクションは3〜5個程度に分割してください
+- 見出しは内容を表す簡潔なタイトルにしてください
+- 各セクションの内容は元のテキストを保持しながら、読みやすく整理してください
+- **必ずJSON形式のみを出力してください。他の説明文は不要です。**
+
+文字起こしテキスト:
+${text}`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let responseText = response.text().trim();
+
+        // Remove markdown code block if present
+        if (responseText.startsWith('```json')) {
+            responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?$/g, '');
+        } else if (responseText.startsWith('```')) {
+            responseText = responseText.replace(/```\n?/g, '');
+        }
+
+        const structured = JSON.parse(responseText);
+
+        return {
+            summary: structured.summary || '',
+            sections: structured.sections || [],
+        };
+    } catch (error) {
+        console.error('AI summary generation error:', error);
+        // Fallback: return original text as a single section
+        return {
+            summary: text.substring(0, 300) + (text.length > 300 ? '...' : ''),
+            sections: [
+                {
+                    heading: '内容',
+                    content: text,
+                },
+            ],
+        };
+    }
+}
+
 // Google Drive API
 export async function uploadToDrive(
     filePath: string,
