@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { HistoryItem } from '@/types';
 import { MusicNote, Document, Trash, Pencil, Check, X, ExternalLink, Inbox } from './Icons';
+import SearchBar from './SearchBar';
+import AudioPlayer from './AudioPlayer';
 import styles from './HistoryList.module.css';
 
 export default function HistoryList() {
@@ -10,6 +12,7 @@ export default function HistoryList() {
     const [loading, setLoading] = useState(true);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editingName, setEditingName] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         fetchHistory();
@@ -106,6 +109,16 @@ export default function HistoryList() {
         );
     }
 
+    // Filter items based on search query
+    const filteredItems = items.filter((item) => {
+        if (!searchQuery.trim()) return true;
+        const query = searchQuery.toLowerCase();
+        return (
+            item.filename.toLowerCase().includes(query) ||
+            item.transcriptionText.toLowerCase().includes(query)
+        );
+    });
+
     if (items.length === 0) {
         return (
             <div className={styles.empty}>
@@ -117,92 +130,114 @@ export default function HistoryList() {
     }
 
     return (
-        <div className={styles.list}>
-            {items.map((item) => (
-                <div key={item.id} className={styles.item}>
-                    <div className={styles.itemHeader}>
-                        <div className={styles.fileIcon}>
-                            <MusicNote size={20} color="var(--primary)" />
-                        </div>
+        <div className={styles.container}>
+            <SearchBar
+                onSearch={setSearchQuery}
+                placeholder="ファイル名または内容で検索..."
+            />
 
-                        {editingId === item.id ? (
-                            <div className={styles.editContainer}>
-                                <input
-                                    type="text"
-                                    value={editingName}
-                                    onChange={(e) => setEditingName(e.target.value)}
-                                    className={styles.editInput}
-                                    autoFocus
-                                />
-                                <button
-                                    onClick={() => saveRename(item)}
-                                    className={styles.editAction}
-                                    aria-label="保存"
-                                >
-                                    <Check size={18} color="var(--success)" />
-                                </button>
-                                <button
-                                    onClick={cancelEditing}
-                                    className={styles.editAction}
-                                    aria-label="キャンセル"
-                                >
-                                    <X size={18} color="var(--text-muted)" />
-                                </button>
-                            </div>
-                        ) : (
-                            <div className={styles.fileInfo}>
-                                <h3 className={styles.filename}>
-                                    {item.filename}
-                                    <button
-                                        onClick={() => startEditing(item)}
-                                        className={styles.editButton}
-                                        aria-label="名前を変更"
-                                    >
-                                        <Pencil size={14} />
-                                    </button>
-                                </h3>
-                                <span className={styles.date}>
-                                    {new Date(item.createdAt).toLocaleString('ja-JP')}
-                                </span>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className={styles.itemBody}>
-                        <div className={styles.meta}>
-                            <span className={styles.badge}>{item.fileType.split('/')[1] || item.fileType}</span>
-                            <span className={styles.size}>
-                                {(item.fileSize / 1024 / 1024).toFixed(2)} MB
-                            </span>
-                        </div>
-
-                        <p className={styles.transcription}>
-                            {item.transcriptionText.substring(0, 150)}
-                            {item.transcriptionText.length > 150 && '...'}
-                        </p>
-                    </div>
-
-                    <div className={styles.itemFooter}>
-                        <a
-                            href={item.docxFileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.openButton}
-                        >
-                            <Document size={18} />
-                            <span>DOCX</span>
-                            <ExternalLink size={14} />
-                        </a>
-                        <button
-                            onClick={() => handleDelete(item.id)}
-                            className={styles.deleteButton}
-                            aria-label="削除"
-                        >
-                            <Trash size={18} />
-                        </button>
-                    </div>
+            {filteredItems.length === 0 ? (
+                <div className={styles.empty}>
+                    <Inbox size={48} color="var(--text-muted)" />
+                    <p>検索結果がありません</p>
+                    <span>別のキーワードで試してみてください</span>
                 </div>
-            ))}
+            ) : (
+                <div className={styles.list}>
+                    {filteredItems.map((item) => (
+                        <div key={item.id} className={styles.item}>
+                            <div className={styles.itemHeader}>
+                                <div className={styles.fileIcon}>
+                                    <MusicNote size={20} color="var(--primary)" />
+                                </div>
+
+                                {editingId === item.id ? (
+                                    <div className={styles.editContainer}>
+                                        <input
+                                            type="text"
+                                            value={editingName}
+                                            onChange={(e) => setEditingName(e.target.value)}
+                                            className={styles.editInput}
+                                            autoFocus
+                                        />
+                                        <button
+                                            onClick={() => saveRename(item)}
+                                            className={styles.editAction}
+                                            aria-label="保存"
+                                        >
+                                            <Check size={18} color="var(--success)" />
+                                        </button>
+                                        <button
+                                            onClick={cancelEditing}
+                                            className={styles.editAction}
+                                            aria-label="キャンセル"
+                                        >
+                                            <X size={18} color="var(--text-muted)" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className={styles.fileInfo}>
+                                        <h3 className={styles.filename}>
+                                            <span>{item.filename}</span>
+                                            <button
+                                                onClick={() => startEditing(item)}
+                                                className={styles.editButton}
+                                                aria-label="名前を変更"
+                                            >
+                                                <Pencil size={14} />
+                                            </button>
+                                        </h3>
+                                        <span className={styles.date}>
+                                            {new Date(item.createdAt).toLocaleString('ja-JP')}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className={styles.itemBody}>
+                                <div className={styles.meta}>
+                                    <span className={styles.badge}>{item.fileType.split('/')[1] || item.fileType}</span>
+                                    <span className={styles.size}>
+                                        {(item.fileSize / 1024 / 1024).toFixed(2)} MB
+                                    </span>
+                                </div>
+
+                                <p className={styles.transcription}>
+                                    {item.transcriptionText.substring(0, 150)}
+                                    {item.transcriptionText.length > 150 && '...'}
+                                </p>
+
+                                {item.audioFilePath && (
+                                    <AudioPlayer
+                                        src={item.audioFilePath}
+                                        filename={item.filename}
+                                    />
+                                )}
+                            </div>
+
+                            <div className={styles.itemFooter}>
+                                <a
+                                    href={item.docxFileUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.openButton}
+                                >
+                                    <Document size={18} />
+                                    <span>DOCX</span>
+                                    <ExternalLink size={14} />
+                                </a>
+                                <button
+                                    onClick={() => handleDelete(item.id)}
+                                    className={styles.deleteButton}
+                                    aria-label="削除"
+                                >
+                                    <Trash size={18} />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

@@ -36,7 +36,7 @@ export async function PATCH(request: NextRequest) {
         const updatedFile = await renameDriveFile(driveFileId, newName + '.docx', accessToken);
 
         // Update history in database
-        const updated = updateHistoryFilename(historyId, userId, newName);
+        const updated = await updateHistoryFilename(historyId, userId, newName);
 
         if (!updated) {
             return NextResponse.json(

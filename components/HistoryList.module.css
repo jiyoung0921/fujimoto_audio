@@ -83,6 +83,18 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
+    min-width: 0;
+    /* Important for flex children to shrink */
+    max-width: 100%;
+}
+
+/* Filename text should overflow with ellipsis */
+.filename>span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
 }
 
 .editButton {

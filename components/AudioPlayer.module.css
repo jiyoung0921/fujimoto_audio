@@ -1,0 +1,135 @@
+/* =========================================
+   AudioPlayer Component
+   ========================================= */
+
+.player {
+    display: flex;
+    align-items: center;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-3);
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+}
+
+.loadingText {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.playButton {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+}
+
+.playButton:hover {
+    transform: scale(1.1);
+}
+
+.playButton:active {
+    transform: scale(0.95);
+}
+
+.controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.filename {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.progressContainer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.time {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    min-width: 40px;
+    text-align: center;
+}
+
+.seekBar {
+    flex: 1;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+.seekBar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform var(--transition-fast);
+}
+
+.seekBar::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.seekBar::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform var(--transition-fast);
+}
+
+.seekBar::-moz-range-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .player {
+        padding: var(--space-2);
+        gap: var(--space-2);
+    }
+
+    .playButton {
+        width: 36px;
+        height: 36px;
+    }
+
+    .filename {
+        font-size: 12px;
+    }
+
+    .time {
+        font-size: 11px;
+        min-width: 35px;
+    }
+}

@@ -1,24 +1,42 @@
-import Database from 'better-sqlite3';
-import path from 'path';
+import { createClient, Client } from '@libsql/client';
 import { HistoryItem } from '@/types';
 
-// Use /tmp for Vercel compatibility (Note: Data will not persist across deployments/cold starts)
-const dbPath = process.env.NODE_ENV === 'production'
-    ? path.join('/tmp', 'transcription.db')
-    : path.join(process.cwd(), 'transcription.db');
+// Turso client instance
+let client: Client | null = null;
 
-let db: Database.Database | null = null;
+function getClient(): Client {
+    if (!client) {
+        const url = process.env.TURSO_DATABASE_URL;
+        const authToken = process.env.TURSO_AUTH_TOKEN;
 
-function getDb(): Database.Database {
-    if (!db) {
-        db = new Database(dbPath);
-        initializeDb(db);
+        if (!url) {
+            throw new Error('TURSO_DATABASE_URL environment variable is not set');
+        }
+
+        // For local development, use local SQLite file
+        if (process.env.NODE_ENV === 'development' && !url.startsWith('libsql://')) {
+            client = createClient({
+                url: 'file:transcription.db',
+            });
+        } else {
+            // For production, use Turso cloud database
+            if (!authToken) {
+                throw new Error('TURSO_AUTH_TOKEN environment variable is not set');
+            }
+            client = createClient({
+                url,
+                authToken,
+            });
+        }
+
+        initializeDb();
     }
-    return db;
+    return client;
 }
 
-function initializeDb(database: Database.Database) {
-    database.exec(`
+async function initializeDb() {
+    const db = getClient();
+    await db.execute(`
     CREATE TABLE IF NOT EXISTS history (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       filename TEXT NOT NULL,
@@ -28,60 +46,71 @@ function initializeDb(database: Database.Database) {
       transcriptionText TEXT NOT NULL,
       docxFileId TEXT NOT NULL,
       docxFileUrl TEXT NOT NULL,
+      audioFilePath TEXT,
       createdAt TEXT NOT NULL,
       userId TEXT NOT NULL
     )
   `);
 }
 
-export function addHistoryItem(item: Omit<HistoryItem, 'id'>): number {
-    const db = getDb();
-    const stmt = db.prepare(`
-    INSERT INTO history (
-      filename, originalName, fileType, fileSize,
-      transcriptionText, docxFileId, docxFileUrl,
-      createdAt, userId
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
+export async function addHistoryItem(item: Omit<HistoryItem, 'id'>): Promise<number> {
+    const db = getClient();
+    const result = await db.execute({
+        sql: `
+      INSERT INTO history (
+        filename, originalName, fileType, fileSize,
+        transcriptionText, docxFileId, docxFileUrl,
+        audioFilePath, createdAt, userId
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+        args: [
+            item.filename,
+            item.originalName,
+            item.fileType,
+            item.fileSize,
+            item.transcriptionText,
+            item.docxFileId,
+            item.docxFileUrl,
+            item.audioFilePath || null,
+            item.createdAt,
+            item.userId,
+        ],
+    });
 
-    const result = stmt.run(
-        item.filename,
-        item.originalName,
-        item.fileType,
-        item.fileSize,
-        item.transcriptionText,
-        item.docxFileId,
-        item.docxFileUrl,
-        item.createdAt,
-        item.userId
-    );
-
-    return result.lastInsertRowid as number;
+    return Number(result.lastInsertRowid);
 }
 
-export function getHistoryByUser(userId: string): HistoryItem[] {
-    const db = getDb();
-    const stmt = db.prepare('SELECT * FROM history WHERE userId = ? ORDER BY createdAt DESC');
-    return stmt.all(userId) as HistoryItem[];
+export async function getHistoryByUser(userId: string): Promise<HistoryItem[]> {
+    const db = getClient();
+    const result = await db.execute({
+        sql: 'SELECT * FROM history WHERE userId = ? ORDER BY createdAt DESC',
+        args: [userId],
+    });
+
+    return result.rows as unknown as HistoryItem[];
 }
 
-export function deleteHistoryItem(id: number, userId: string): boolean {
-    const db = getDb();
-    const stmt = db.prepare('DELETE FROM history WHERE id = ? AND userId = ?');
-    const result = stmt.run(id, userId);
-    return result.changes > 0;
+export async function deleteHistoryItem(id: number, userId: string): Promise<boolean> {
+    const db = getClient();
+    const result = await db.execute({
+        sql: 'DELETE FROM history WHERE id = ? AND userId = ?',
+        args: [id, userId],
+    });
+
+    return result.rowsAffected > 0;
 }
 
-export function updateHistoryFilename(id: number, userId: string, newFilename: string): boolean {
-    const db = getDb();
-    const stmt = db.prepare('UPDATE history SET filename = ? WHERE id = ? AND userId = ?');
-    const result = stmt.run(newFilename, id, userId);
-    return result.changes > 0;
+export async function updateHistoryFilename(id: number, userId: string, newFilename: string): Promise<boolean> {
+    const db = getClient();
+    const result = await db.execute({
+        sql: 'UPDATE history SET filename = ? WHERE id = ? AND userId = ?',
+        args: [newFilename, id, userId],
+    });
+
+    return result.rowsAffected > 0;
 }
 
 export function closeDb() {
-    if (db) {
-        db.close();
-        db = null;
-    }
+    // Turso client doesn't require explicit closing
+    client = null;
 }

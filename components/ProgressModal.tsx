@@ -1,6 +1,7 @@
 'use client';
 
 import { ProcessingStatus, ErrorDetail } from '@/types';
+import { CloudUpload, Microphone, File, CloudCheck, CheckCircle, WarningCircle, X } from './Icons';
 import styles from './ProgressModal.module.css';
 
 interface ProgressModalProps {
@@ -35,7 +36,11 @@ export default function ProgressModal({ isOpen, status, error, onClose }: Progre
             <div className={styles.modal}>
                 <div className={styles.header}>
                     <h2 className={styles.title}>
-                        {status.step === 'error' ? '⚠️ エラー' : '🔄 処理中'}
+                        {status.step === 'error' ? (
+                            <><WarningCircle size={24} weight="fill" color="var(--danger)" /> エラー</>
+                        ) : (
+                            <><CloudUpload size={24} color="var(--primary)" /> 処理中</>
+                        )}
                     </h2>
                 </div>
 
@@ -44,22 +49,22 @@ export default function ProgressModal({ isOpen, status, error, onClose }: Progre
                         <>
                             <div className={styles.stepIndicator}>
                                 <div className={`${styles.step} ${status.step === 'upload' || status.progress >= 25 ? styles.active : ''}`}>
-                                    <div className={styles.stepIcon}>📤</div>
+                                    <div className={styles.stepIcon}><CloudUpload size={20} weight="fill" /></div>
                                     <div className={styles.stepLabel}>アップロード</div>
                                 </div>
                                 <div className={styles.stepLine}></div>
                                 <div className={`${styles.step} ${status.step === 'transcribe' || status.progress >= 50 ? styles.active : ''}`}>
-                                    <div className={styles.stepIcon}>🎤</div>
+                                    <div className={styles.stepIcon}><Microphone size={20} weight="fill" /></div>
                                     <div className={styles.stepLabel}>文字起こし</div>
                                 </div>
                                 <div className={styles.stepLine}></div>
                                 <div className={`${styles.step} ${status.step === 'docx' || status.progress >= 75 ? styles.active : ''}`}>
-                                    <div className={styles.stepIcon}>📄</div>
+                                    <div className={styles.stepIcon}><File size={20} weight="fill" /></div>
                                     <div className={styles.stepLabel}>DOCX生成</div>
                                 </div>
                                 <div className={styles.stepLine}></div>
                                 <div className={`${styles.step} ${status.step === 'drive' || status.progress >= 100 ? styles.active : ''}`}>
-                                    <div className={styles.stepIcon}>☁️</div>
+                                    <div className={styles.stepIcon}><CloudCheck size={20} weight="fill" /></div>
                                     <div className={styles.stepLabel}>Drive保存</div>
                                 </div>
                             </div>
@@ -74,7 +79,7 @@ export default function ProgressModal({ isOpen, status, error, onClose }: Progre
 
                     {status.step === 'complete' && (
                         <div className={styles.success}>
-                            <div className={styles.successIcon}>✅</div>
+                            <div className={styles.successIcon}><CheckCircle size={64} weight="fill" color="var(--success)" /></div>
                             <p className={styles.successMessage}>処理が完了しました！</p>
                             {onClose && (
                                 <button onClick={onClose} className="btn btn-primary">
@@ -86,7 +91,7 @@ export default function ProgressModal({ isOpen, status, error, onClose }: Progre
 
                     {status.step === 'error' && error && (
                         <div className={styles.error}>
-                            <div className={styles.errorIcon}>❌</div>
+                            <div className={styles.errorIcon}><X size={64} weight="bold" color="var(--danger)" /></div>
                             <div className={styles.errorContent}>
                                 <h3 className={styles.errorCode}>エラーコード: {error.code}</h3>
                                 <p className={styles.errorMessage}>{error.message}</p>

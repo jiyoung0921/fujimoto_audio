@@ -170,7 +170,14 @@ export function Folder({ size = 24, color = 'currentColor', weight = 'regular', 
 }
 
 // Upload Cloud
-export function CloudUpload({ size = 24, color = 'currentColor', className }: IconProps) {
+export function CloudUpload({ size = 24, color = 'currentColor', weight = 'regular', className }: IconProps) {
+    if (weight === 'fill') {
+        return (
+            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill={color}>
+                <path d="M18.42 9.21a7 7 0 0 0-13.36 1.58A4 4 0 0 0 6 19h11a5 5 0 0 0 1.42-9.79ZM13 13v4h-2v-4H9l3-4 3 4h-2Z" />
+            </svg>
+        );
+    }
     return (
         <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M16 16l-4-4-4 4" />
@@ -231,6 +238,23 @@ export function Plus({ size = 24, color = 'currentColor', className }: IconProps
         <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+    );
+}
+
+// MagnifyingGlass (Search)
+export function MagnifyingGlass({ size = 24, color = 'currentColor', weight = 'regular', className }: IconProps) {
+    if (weight === 'fill') {
+        return (
+            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill={color}>
+                <path d="M11 2a9 9 0 1 0 5.62 16.02l4.68 4.68a1 1 0 0 0 1.42-1.42l-4.68-4.68A9 9 0 0 0 11 2Zm0 16a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z" />
+            </svg>
+        );
+    }
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
         </svg>
     );
 }
@@ -341,3 +365,59 @@ export function Refresh({ size = 24, color = 'currentColor', className }: IconPr
         </svg>
     );
 }
+
+// File (Generic file icon)
+export function File({ size = 24, color = 'currentColor', weight = 'regular', className }: IconProps) {
+    if (weight === 'fill') {
+        return (
+            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill={color}>
+                <path d="M14.41 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.59L14.41 3ZM15 4.41L18.59 8H15V4.41ZM18 19H6V5h7v4a1 1 0 0 0 1 1h4v9Z" />
+            </svg>
+        );
+    }
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <line x1="10" y1="9" x2="8" y2="9" />
+        </svg>
+    );
+}
+
+// Cloud with Check (Success upload)
+export function CloudCheck({ size = 24, color = 'currentColor', weight = 'regular', className }: IconProps) {
+    if (weight === 'fill') {
+        return (
+            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill={color}>
+                <path d="M18.42 8.21a7 7 0 0 0-13.36 1.58A4 4 0 0 0 6 18h11a5 5 0 0 0 1.42-9.79ZM16.71 11.29l-5 5a1 1 0 0 1-1.42 0l-2-2a1 1 0 0 1 1.42-1.42L11 14.17l4.29-4.29a1 1 0 0 1 1.42 1.41Z" />
+            </svg>
+        );
+    }
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 18a5 5 0 0 0-.84-9H18a7 7 0 1 0-13.7 2" />
+            <polyline points="9 13 11 15 15 11" />
+        </svg>
+    );
+}
+
+// Warning Circle (Error state)
+export function WarningCircle({ size = 24, color = 'currentColor', weight = 'regular', className }: IconProps) {
+    if (weight === 'fill') {
+        return (
+            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill={color}>
+                <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 5a1 1 0 0 1 1 1v5a1 1 0 0 1-2 0V8a1 1 0 0 1 1-1Zm0 10a1 1 0 1 1 1-1 1 1 0 0 1-1 1Z" />
+            </svg>
+        );
+    }
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+    );
+}
+

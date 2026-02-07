@@ -26,8 +26,17 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ success: true, folders });
     } catch (error: any) {
         console.error('List folders error:', error);
+
+        // Handle Google API specific errors
+        if (error.code === 401 || error.code === 403) {
+            return NextResponse.json(
+                { success: false, error: 'Google Driveへのアクセス権限がありません。再ログインしてください。', code: 'AUTH_ERROR' },
+                { status: 401 }
+            );
+        }
+
         return NextResponse.json(
-            { success: false, error: error.message },
+            { success: false, error: error.message || 'フォルダ一覧の取得に失敗しました', code: 'UNKNOWN_ERROR' },
             { status: 500 }
         );
     }

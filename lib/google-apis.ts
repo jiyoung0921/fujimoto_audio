@@ -131,9 +131,22 @@ export async function listDriveFolders(accessToken: string) {
         );
 
         return response.data.files || [];
-    } catch (error) {
+    } catch (error: any) {
         console.error('List folders error:', error);
-        throw new Error('フォルダ一覧の取得に失敗しました');
+        console.error('Error response:', error.response?.data);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
+
+        // Provide more specific error messages
+        if (error.code === 401) {
+            throw new Error('認証が無効です。再度ログインしてください。');
+        } else if (error.code === 403) {
+            throw new Error('Google Driveへのアクセス権限がありません。アプリ認証時に権限を付与してください。');
+        } else if (error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
+            throw new Error('Google Driveに接続できません。インターネット接続を確認してください。');
+        }
+
+        throw new Error(error.message || 'フォルダ一覧の取得に失敗しました');
     }
 }
 

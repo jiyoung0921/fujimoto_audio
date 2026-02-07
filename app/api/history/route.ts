@@ -11,7 +11,7 @@ export async function GET(): Promise<NextResponse<HistoryResponse>> {
             return NextResponse.json({ success: false, error: '認証が必要です' }, { status: 401 });
         }
 
-        const items = getHistoryByUser(session.user.email);
+        const items = await getHistoryByUser(session.user.email);
         return NextResponse.json({ success: true, items });
     } catch (error) {
         console.error('History fetch error:', error);
@@ -35,7 +35,7 @@ export async function DELETE(request: NextRequest): Promise<NextResponse<DeleteR
             return NextResponse.json({ success: false, error: 'IDが必要です' }, { status: 400 });
         }
 
-        const deleted = deleteHistoryItem(id, session.user.email);
+        const deleted = await deleteHistoryItem(id, session.user.email);
 
         if (!deleted) {
             return NextResponse.json({ success: false, error: '削除に失敗しました' }, { status: 404 });

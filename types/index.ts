@@ -7,6 +7,7 @@ export interface HistoryItem {
     transcriptionText: string;
     docxFileId: string;
     docxFileUrl: string;
+    audioFilePath?: string | null;
     createdAt: string;
     userId: string;
 }

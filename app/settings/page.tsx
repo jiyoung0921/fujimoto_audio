@@ -31,7 +31,15 @@ export default function SettingsPage() {
         setLoadingFolders(true);
         setError('');
         try {
-            const response = await fetch('/api/drive/folders');
+            // Add timeout to prevent infinite loading
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+            const response = await fetch('/api/drive/folders', {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
             const data = await response.json();
 
             if (data.success) {
@@ -43,9 +51,13 @@ export default function SettingsPage() {
                     setError(data.error || 'フォルダの読み込みに失敗しました');
                 }
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to load folders:', error);
-            setError('フォルダの読み込みに失敗しました');
+            if (error.name === 'AbortError') {
+                setError('リクエストがタイムアウトしました。もう一度お試しください。');
+            } else {
+                setError(`フォルダの読み込みに失敗しました: ${error.message || '不明なエラー'}`);
+            }
         } finally {
             setLoadingFolders(false);
         }
