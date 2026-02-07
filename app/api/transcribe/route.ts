@@ -21,8 +21,26 @@ export async function POST(request: NextRequest): Promise<NextResponse<Transcrib
             return NextResponse.json({ success: false, error: 'ファイルパスが必要です' }, { status: 400 });
         }
 
+        // デバッグ: 環境変数の確認
+        console.log('=== Transcribe API Debug ===');
+        console.log('GEMINI_API_KEY exists:', !!process.env.GEMINI_API_KEY);
+        console.log('GEMINI_API_KEY length:', process.env.GEMINI_API_KEY?.length || 0);
+        console.log('File path:', filePath);
+        console.log('Original name:', originalName);
+        console.log('File type:', fileType);
+
+        if (!process.env.GEMINI_API_KEY) {
+            console.error('GEMINI_API_KEY is not set in environment variables');
+            return NextResponse.json({
+                success: false,
+                error: 'API キーが設定されていません。環境変数を確認してください。'
+            }, { status: 500 });
+        }
+
         // Transcribe audio
+        console.log('Starting transcription...');
         const transcription = await transcribeAudio(filePath);
+        console.log('Transcription completed. Length:', transcription.length);
 
         if (!transcription) {
             return NextResponse.json({ success: false, error: '文字起こし結果が空です' }, { status: 400 });
