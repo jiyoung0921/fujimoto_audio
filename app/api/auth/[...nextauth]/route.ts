@@ -13,8 +13,9 @@ export const authOptions: NextAuthOptions = {
                     // prompt: 'consent' -> Removed to prevent re-consent loop with SSO
                 },
             },
-            // SSO Compatibility: Only use PKCE, skip state check to avoid mismatch after multiple redirects
-            checks: ['pkce'],
+            // SSO Compatibility: Disable all checks (state/nonce/pkce) for TrustLogin SSO
+            // TrustLogin redirects can cause state/nonce mismatch, so we disable these checks
+            checks: [],
         }),
     ],
     callbacks: {

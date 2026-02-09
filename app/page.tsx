@@ -154,7 +154,7 @@ export default function Home({ onTabChange }: HomeProps = {}) {
                 </div>
                 <button
                     className={styles.welcomeHint}
-                    onClick={() => signIn('google')}
+                    onClick={() => signIn('google', { callbackUrl: '/' })}
                 >
                     <User size={20} />
                     <span>ログインして始めましょう</span>

@@ -12,7 +12,7 @@ export default function Header() {
 
     const handleLogout = () => {
         setShowLogoutConfirm(false);
-        signOut();
+        signOut({ callbackUrl: '/' });
     };
 
     return (
@@ -58,7 +58,7 @@ export default function Header() {
                             </div>
                         ) : (
                             <button
-                                onClick={() => signIn('google')}
+                                onClick={() => signIn('google', { callbackUrl: '/' })}
                                 className={styles.signInBtn}
                             >
                                 ログイン

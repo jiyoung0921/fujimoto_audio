@@ -124,7 +124,7 @@ export default function SettingsPage() {
                     <p className={styles.welcomeText}>
                         設定を変更するにはログインしてください
                     </p>
-                    <button onClick={() => signIn('google')} className="btn btn-primary btn-block">
+                    <button onClick={() => signIn('google', { callbackUrl: '/settings' })} className="btn btn-primary btn-block">
                         Googleでログイン
                     </button>
                 </div>
@@ -252,7 +252,7 @@ export default function SettingsPage() {
                     <p className={styles.accountInfo}>{session.user?.email}</p>
                 </div>
 
-                <button onClick={() => signOut()} className="btn btn-danger btn-block">
+                <button onClick={() => signOut({ callbackUrl: '/' })} className="btn btn-danger btn-block">
                     ログアウト
                 </button>
             </div>
