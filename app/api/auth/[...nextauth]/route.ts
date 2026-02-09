@@ -78,6 +78,29 @@ export const authOptions: NextAuthOptions = {
             (session as any).error = token.error;
             return session;
         },
+        // Explicitly control redirects to break TrustLogin loop
+        async redirect({ url, baseUrl }) {
+            // Always redirect to our app, not external URLs
+            if (url.startsWith(baseUrl)) {
+                return url;
+            }
+            // If it's a relative URL, make it absolute
+            if (url.startsWith('/')) {
+                return `${baseUrl}${url}`;
+            }
+            // For external URLs (like Google OAuth callback), allow them
+            if (url.startsWith('https://accounts.google.com') ||
+                url.startsWith('https://oauth2.googleapis.com')) {
+                return url;
+            }
+            // Default: redirect to home
+            return baseUrl;
+        },
+        // Allow sign in from any account
+        async signIn({ account, profile }) {
+            // Allow all Google sign-ins
+            return true;
+        },
     },
     // Debug mode for troubleshooting SSO issues
     debug: process.env.NODE_ENV === 'development',
