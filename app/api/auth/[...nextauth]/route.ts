@@ -10,7 +10,8 @@ export const authOptions: NextAuthOptions = {
                 params: {
                     scope: 'openid email profile https://www.googleapis.com/auth/drive',
                     access_type: 'offline',
-                    // prompt: 'consent' -> Removed to prevent re-consent loop with SSO
+                    // Force account selection to bypass automatic SSO redirect
+                    prompt: 'select_account',
                 },
             },
             // SSO Compatibility: Disable all checks (state/nonce/pkce) for TrustLogin SSO
@@ -78,18 +79,20 @@ export const authOptions: NextAuthOptions = {
             return session;
         },
     },
+    // Debug mode for troubleshooting SSO issues
+    debug: process.env.NODE_ENV === 'development',
     pages: {
         signIn: '/',
     },
     // SSO Compatibility: Trust Vercel/Proxy host
     trustHost: true,
-    // SSO Compatibility: Allow cross-site cookies for IdP redirects
+    // SSO Compatibility: Use 'lax' for better SSO compatibility (default NextAuth behavior)
     cookies: {
         sessionToken: {
             name: `next-auth.session-token`,
             options: {
                 httpOnly: true,
-                sameSite: 'none',
+                sameSite: 'lax',
                 path: '/',
                 secure: true,
             },
@@ -97,7 +100,7 @@ export const authOptions: NextAuthOptions = {
         callbackUrl: {
             name: `next-auth.callback-url`,
             options: {
-                sameSite: 'none',
+                sameSite: 'lax',
                 path: '/',
                 secure: true,
             },
@@ -106,7 +109,7 @@ export const authOptions: NextAuthOptions = {
             name: `next-auth.csrf-token`,
             options: {
                 httpOnly: true,
-                sameSite: 'none',
+                sameSite: 'lax',
                 path: '/',
                 secure: true,
             },
@@ -115,7 +118,7 @@ export const authOptions: NextAuthOptions = {
             name: `next-auth.pkce.code_verifier`,
             options: {
                 httpOnly: true,
-                sameSite: 'none',
+                sameSite: 'lax',
                 path: '/',
                 secure: true,
             },
