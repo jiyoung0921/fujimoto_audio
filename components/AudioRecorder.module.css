@@ -186,6 +186,71 @@
     color: var(--text-muted);
 }
 
+/* Highlight Button */
+.highlightButton {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--warning);
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    align-self: center;
+}
+
+.highlightButton:hover {
+    background: rgba(253, 203, 110, 0.15);
+    transform: scale(1.08);
+}
+
+.highlightButton:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.highlightFlash {
+    animation: highlightPulse 0.6s ease;
+}
+
+@keyframes highlightPulse {
+    0% {
+        transform: scale(1);
+        background: transparent;
+    }
+
+    30% {
+        transform: scale(1.2);
+        background: rgba(253, 203, 110, 0.3);
+    }
+
+    100% {
+        transform: scale(1);
+        background: transparent;
+    }
+}
+
+.highlightCount {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--warning);
+    color: var(--gray-900);
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* =========================================
    Responsive
    ========================================= */

@@ -3,10 +3,12 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]/route';
 import { transcribeAudio, uploadToDrive } from '@/lib/google-apis';
 import { generateDocx } from '@/lib/docx-generator';
-import { addHistoryItem } from '@/lib/db';
+import { addHistoryItem, updateHistorySummary } from '@/lib/db';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { TranscribeResponse } from '@/types';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getDefaultTemplate } from '@/lib/summary-templates';
 
 export async function POST(request: NextRequest): Promise<NextResponse<TranscribeResponse>> {
     try {
@@ -82,6 +84,29 @@ export async function POST(request: NextRequest): Promise<NextResponse<Transcrib
             createdAt: new Date().toISOString(),
             userId: session.user.email,
         });
+
+        // Auto-summarize in the background (don't block the response)
+        if (transcription.length >= 100) {
+            const autoSummarize = async () => {
+                try {
+                    const template = getDefaultTemplate();
+                    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+                    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+                    const prompt = `${template.prompt}\n\n文字起こしテキスト:\n${transcription}`;
+                    const result = await model.generateContent(prompt);
+                    const response = await result.response;
+                    const summary = response.text().trim();
+
+                    await updateHistorySummary(historyId, session.user!.email!, summary, template.id);
+                    console.log('Auto-summary generated for history:', historyId);
+                } catch (err) {
+                    console.error('Auto-summarize failed (non-blocking):', err);
+                }
+            };
+            // Fire and forget - don't await
+            autoSummarize();
+        }
 
         // Clean up temp files
         await fs.unlink(filePath).catch(() => { });

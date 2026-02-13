@@ -13,6 +13,8 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
     const [isRecording, setIsRecording] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
+    const [highlights, setHighlights] = useState<number[]>([]);
+    const [highlightFlash, setHighlightFlash] = useState(false);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -49,6 +51,7 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
             setIsRecording(true);
             setIsPaused(false);
             setRecordingTime(0);
+            setHighlights([]);
 
             timerRef.current = setInterval(() => {
                 setRecordingTime((prev) => prev + 1);
@@ -95,6 +98,12 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const addHighlight = () => {
+        setHighlights((prev) => [...prev, recordingTime]);
+        setHighlightFlash(true);
+        setTimeout(() => setHighlightFlash(false), 600);
     };
 
     // Not recording state - show large mic button
@@ -146,6 +155,19 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
                     )}
                 </button>
 
+                {/* Center: Highlight */}
+                <button
+                    className={`${styles.highlightButton} ${highlightFlash ? styles.highlightFlash : ''}`}
+                    onClick={addHighlight}
+                    aria-label="ハイライト"
+                    disabled={isPaused}
+                >
+                    ⭐
+                    {highlights.length > 0 && (
+                        <span className={styles.highlightCount}>{highlights.length}</span>
+                    )}
+                </button>
+
                 {/* Right: Stop */}
                 <button
                     className={styles.controlButton}
@@ -159,6 +181,7 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
             {/* Labels below buttons */}
             <div className={styles.controlLabels}>
                 <span>{isPaused ? '再開' : '一時停止'}</span>
+                <span>ハイライト</span>
                 <span>完了</span>
             </div>
         </div>

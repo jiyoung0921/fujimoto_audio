@@ -47,10 +47,20 @@ async function initializeDb() {
       docxFileId TEXT NOT NULL,
       docxFileUrl TEXT NOT NULL,
       audioFilePath TEXT,
+      summaryText TEXT,
+      summaryTemplate TEXT,
       createdAt TEXT NOT NULL,
       userId TEXT NOT NULL
     )
   `);
+
+    // Migration: add summary columns to existing tables
+    try {
+        await db.execute('ALTER TABLE history ADD COLUMN summaryText TEXT');
+    } catch (_) { /* column already exists */ }
+    try {
+        await db.execute('ALTER TABLE history ADD COLUMN summaryTemplate TEXT');
+    } catch (_) { /* column already exists */ }
 }
 
 export async function addHistoryItem(item: Omit<HistoryItem, 'id'>): Promise<number> {
@@ -60,8 +70,8 @@ export async function addHistoryItem(item: Omit<HistoryItem, 'id'>): Promise<num
       INSERT INTO history (
         filename, originalName, fileType, fileSize,
         transcriptionText, docxFileId, docxFileUrl,
-        audioFilePath, createdAt, userId
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        audioFilePath, summaryText, summaryTemplate, createdAt, userId
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `,
         args: [
             item.filename,
@@ -72,6 +82,8 @@ export async function addHistoryItem(item: Omit<HistoryItem, 'id'>): Promise<num
             item.docxFileId,
             item.docxFileUrl,
             item.audioFilePath || null,
+            item.summaryText || null,
+            item.summaryTemplate || null,
             item.createdAt,
             item.userId,
         ],
@@ -105,6 +117,32 @@ export async function updateHistoryFilename(id: number, userId: string, newFilen
     const result = await db.execute({
         sql: 'UPDATE history SET filename = ? WHERE id = ? AND userId = ?',
         args: [newFilename, id, userId],
+    });
+
+    return result.rowsAffected > 0;
+}
+
+export async function getHistoryItemById(id: number, userId: string): Promise<HistoryItem | null> {
+    const db = getClient();
+    const result = await db.execute({
+        sql: 'SELECT * FROM history WHERE id = ? AND userId = ?',
+        args: [id, userId],
+    });
+
+    if (result.rows.length === 0) return null;
+    return result.rows[0] as unknown as HistoryItem;
+}
+
+export async function updateHistorySummary(
+    id: number,
+    userId: string,
+    summaryText: string,
+    summaryTemplate: string
+): Promise<boolean> {
+    const db = getClient();
+    const result = await db.execute({
+        sql: 'UPDATE history SET summaryText = ?, summaryTemplate = ? WHERE id = ? AND userId = ?',
+        args: [summaryText, summaryTemplate, id, userId],
     });
 
     return result.rowsAffected > 0;

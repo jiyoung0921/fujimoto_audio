@@ -5,9 +5,11 @@ import { HistoryItem } from '@/types';
 import { MusicNote, Document, Trash, Pencil, Check, X, ExternalLink, Inbox } from './Icons';
 import SearchBar from './SearchBar';
 import AudioPlayer from './AudioPlayer';
+import { useRouter } from 'next/navigation';
 import styles from './HistoryList.module.css';
 
 export default function HistoryList() {
+    const router = useRouter();
     const [items, setItems] = useState<HistoryItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [editingId, setEditingId] = useState<number | null>(null);
@@ -145,7 +147,16 @@ export default function HistoryList() {
             ) : (
                 <div className={styles.list}>
                     {filteredItems.map((item) => (
-                        <div key={item.id} className={styles.item}>
+                        <div
+                            key={item.id}
+                            className={styles.item}
+                            onClick={() => {
+                                if (editingId !== item.id) {
+                                    router.push(`/history/${item.id}`);
+                                }
+                            }}
+                            style={{ cursor: editingId === item.id ? 'default' : 'pointer' }}
+                        >
                             <div className={styles.itemHeader}>
                                 <div className={styles.fileIcon}>
                                     <MusicNote size={20} color="var(--primary)" />
@@ -206,6 +217,16 @@ export default function HistoryList() {
                                     {item.transcriptionText.substring(0, 150)}
                                     {item.transcriptionText.length > 150 && '...'}
                                 </p>
+
+                                {item.summaryText && (
+                                    <div className={styles.summaryPreview}>
+                                        <span className={styles.summaryBadge}>📝 要約</span>
+                                        <p className={styles.summaryText}>
+                                            {item.summaryText.substring(0, 80)}
+                                            {item.summaryText.length > 80 && '...'}
+                                        </p>
+                                    </div>
+                                )}
 
                                 {item.audioFilePath && (
                                     <AudioPlayer

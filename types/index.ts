@@ -8,6 +8,8 @@ export interface HistoryItem {
     docxFileId: string;
     docxFileUrl: string;
     audioFilePath?: string | null;
+    summaryText?: string | null;
+    summaryTemplate?: string | null;
     createdAt: string;
     userId: string;
 }
@@ -70,3 +72,43 @@ export interface RenameRequest {
 }
 
 export type TabType = 'home' | 'history' | 'settings';
+
+export interface SummaryTemplate {
+    id: string;
+    name: string;
+    icon: string;
+    description: string;
+    prompt: string;
+}
+
+export interface AskRequest {
+    historyId: number;
+    question: string;
+}
+
+export interface AskResponse {
+    success: boolean;
+    answer?: string;
+    suggestions?: string[];
+    error?: string;
+}
+
+export interface SummarizeRequest {
+    historyId: number;
+    templateId: string;
+}
+
+export interface SummarizeResponse {
+    success: boolean;
+    summary?: string;
+    error?: string;
+}
+
+export type ExportFormat = 'txt' | 'markdown' | 'docx';
+
+export interface ExportRequest {
+    historyId: number;
+    format: ExportFormat;
+}
+
+export type DetailTab = 'transcript' | 'summary' | 'ask';
