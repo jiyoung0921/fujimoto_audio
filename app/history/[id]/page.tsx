@@ -1,13 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { HistoryItem, DetailTab } from '@/types';
 import { summaryTemplates } from '@/lib/summary-templates';
+import { FileText, ClipboardText, ChatBubble, ArrowLeft, Sparkle, ListChecks, QuestionCircle, Lightbulb } from '@/components/Icons';
 import AskPanel from '@/components/AskPanel';
 import ExportMenu from '@/components/ExportMenu';
 import AudioPlayer from '@/components/AudioPlayer';
 import styles from './page.module.css';
+
+const templateIconMap: Record<string, ReactNode> = {
+    clipboard: <ClipboardText size={24} color="var(--primary)" />,
+    listChecks: <ListChecks size={24} color="var(--primary)" />,
+    lightbulb: <Lightbulb size={24} color="var(--primary)" />,
+    question: <QuestionCircle size={24} color="var(--primary)" />,
+    fileText: <FileText size={24} color="var(--primary)" />,
+};
 
 export default function HistoryDetailPage() {
     const params = useParams();
@@ -94,10 +103,10 @@ export default function HistoryDetailPage() {
         );
     }
 
-    const tabs: { id: DetailTab; label: string; icon: string }[] = [
-        { id: 'transcript', label: '全文', icon: '📄' },
-        { id: 'summary', label: '要約', icon: '📝' },
-        { id: 'ask', label: 'AI質問', icon: '💬' },
+    const tabs: { id: DetailTab; label: string; icon: ReactNode }[] = [
+        { id: 'transcript', label: '全文', icon: <FileText size={16} /> },
+        { id: 'summary', label: '要約', icon: <ClipboardText size={16} /> },
+        { id: 'ask', label: 'AI質問', icon: <ChatBubble size={16} /> },
     ];
 
     return (
@@ -105,7 +114,7 @@ export default function HistoryDetailPage() {
             {/* Header */}
             <div className={styles.header}>
                 <button onClick={() => router.push('/history')} className={styles.backBtn}>
-                    ← 戻る
+                    <ArrowLeft size={16} /> 戻る
                 </button>
                 <div className={styles.headerInfo}>
                     <h1 className={styles.title}>{item.filename}</h1>
@@ -173,7 +182,7 @@ export default function HistoryDetailPage() {
                                             }`}
                                         onClick={() => setSelectedTemplate(t.id)}
                                     >
-                                        <span className={styles.templateIcon}>{t.icon}</span>
+                                        <span className={styles.templateIcon}>{templateIconMap[t.icon] || t.icon}</span>
                                         <span className={styles.templateName}>{t.name}</span>
                                     </button>
                                 ))}
@@ -190,7 +199,7 @@ export default function HistoryDetailPage() {
                                     </>
                                 ) : (
                                     <>
-                                        <span>✨</span>
+                                        <Sparkle size={16} />
                                         <span>
                                             {item.summaryText ? '再要約する' : '要約を生成'}
                                         </span>
@@ -248,7 +257,7 @@ export default function HistoryDetailPage() {
                             </div>
                         ) : (
                             <div className={styles.noSummary}>
-                                <p>📝 まだ要約がありません</p>
+                                <p><ClipboardText size={16} /> まだ要約がありません</p>
                                 <p>上のテンプレートを選択して「要約を生成」をクリックしてください</p>
                             </div>
                         )}

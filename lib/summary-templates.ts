@@ -4,7 +4,7 @@ export const summaryTemplates: SummaryTemplate[] = [
     {
         id: 'minutes',
         name: '議事録',
-        icon: '📋',
+        icon: 'clipboard',
         description: '会議の議事録形式でまとめます',
         prompt: `以下の文字起こしテキストを議事録形式でまとめてください。
 
@@ -32,7 +32,7 @@ export const summaryTemplates: SummaryTemplate[] = [
     {
         id: 'action-items',
         name: 'アクション',
-        icon: '✅',
+        icon: 'listChecks',
         description: 'タスクとアクションアイテムを抽出します',
         prompt: `以下の文字起こしテキストから、アクションアイテム（実行すべきタスク）を抽出してください。
 
@@ -59,7 +59,7 @@ export const summaryTemplates: SummaryTemplate[] = [
     {
         id: 'key-points',
         name: '要点整理',
-        icon: '📝',
+        icon: 'lightbulb',
         description: '重要なポイントを箇条書きで整理します',
         prompt: `以下の文字起こしテキストの要点を整理してください。
 
@@ -84,7 +84,7 @@ export const summaryTemplates: SummaryTemplate[] = [
     {
         id: 'qa-format',
         name: 'Q&A形式',
-        icon: '❓',
+        icon: 'question',
         description: '内容をQ&A形式に変換します',
         prompt: `以下の文字起こしテキストの内容をQ&A（質問と回答）形式に変換してください。
 
@@ -108,7 +108,7 @@ export const summaryTemplates: SummaryTemplate[] = [
     {
         id: 'free-summary',
         name: '自由要約',
-        icon: '📄',
+        icon: 'fileText',
         description: '読みやすい文章形式で要約します',
         prompt: `以下の文字起こしテキストを読みやすい要約にまとめてください。
 

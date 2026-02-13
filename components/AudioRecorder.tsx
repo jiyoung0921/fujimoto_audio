@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { generateFilename } from '@/lib/utils';
-import { Microphone, StopCircle, PauseCircle, PlayCircle } from './Icons';
+import { Microphone, StopCircle, PauseCircle, PlayCircle, Star } from './Icons';
 import styles from './AudioRecorder.module.css';
 
 interface AudioRecorderProps {
@@ -162,7 +162,7 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
                     aria-label="ハイライト"
                     disabled={isPaused}
                 >
-                    ⭐
+                    <Star size={22} color="var(--warning)" weight="fill" />
                     {highlights.length > 0 && (
                         <span className={styles.highlightCount}>{highlights.length}</span>
                     )}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { HistoryItem } from '@/types';
-import { MusicNote, Document, Trash, Pencil, Check, X, ExternalLink, Inbox } from './Icons';
+import { MusicNote, Document, Trash, Pencil, Check, X, ExternalLink, Inbox, ClipboardText } from './Icons';
 import SearchBar from './SearchBar';
 import AudioPlayer from './AudioPlayer';
 import { useRouter } from 'next/navigation';
@@ -220,7 +220,7 @@ export default function HistoryList() {
 
                                 {item.summaryText && (
                                     <div className={styles.summaryPreview}>
-                                        <span className={styles.summaryBadge}>📝 要約</span>
+                                        <span className={styles.summaryBadge}><ClipboardText size={12} color="var(--primary)" /> 要約</span>
                                         <p className={styles.summaryText}>
                                             {item.summaryText.substring(0, 80)}
                                             {item.summaryText.length > 80 && '...'}

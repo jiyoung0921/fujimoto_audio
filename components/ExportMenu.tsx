@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { Download, Document, FileText, Hash } from './Icons';
 import styles from './ExportMenu.module.css';
 
 interface ExportMenuProps {
@@ -62,9 +63,9 @@ export default function ExportMenu({ historyId, docxUrl }: ExportMenuProps) {
     };
 
     const formats = [
-        { id: 'docx', name: 'DOCX', icon: '📄', desc: 'Google Drive' },
-        { id: 'txt', name: 'TXT', icon: '📝', desc: 'テキストファイル' },
-        { id: 'markdown', name: 'Markdown', icon: '📋', desc: 'Markdownファイル' },
+        { id: 'docx', name: 'DOCX', icon: <Document size={20} color="var(--primary)" />, desc: 'Google Drive' },
+        { id: 'txt', name: 'TXT', icon: <FileText size={20} color="var(--text-secondary)" />, desc: 'テキストファイル' },
+        { id: 'markdown', name: 'Markdown', icon: <Hash size={20} color="var(--text-secondary)" />, desc: 'Markdownファイル' },
     ];
 
     return (
@@ -73,7 +74,7 @@ export default function ExportMenu({ historyId, docxUrl }: ExportMenuProps) {
                 className={styles.trigger}
                 onClick={() => setIsOpen(!isOpen)}
             >
-                <span>📥</span>
+                <Download size={16} color="var(--primary)" />
                 <span>エクスポート</span>
             </button>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ChatBubble, Robot, Send } from './Icons';
 import styles from './AskPanel.module.css';
 
 interface Message {
@@ -80,7 +81,7 @@ export default function AskPanel({ historyId, initialSuggestions }: AskPanelProp
             <div className={styles.chatArea}>
                 {messages.length === 0 && (
                     <div className={styles.welcome}>
-                        <div className={styles.welcomeIcon}>💬</div>
+                        <div className={styles.welcomeIcon}><ChatBubble size={48} color="var(--primary)" /></div>
                         <h3>AIに質問する</h3>
                         <p>文字起こし内容について何でも聞いてください</p>
                     </div>
@@ -93,7 +94,7 @@ export default function AskPanel({ historyId, initialSuggestions }: AskPanelProp
                             }`}
                     >
                         {msg.role === 'assistant' && (
-                            <div className={styles.avatarAI}>🤖</div>
+                            <div className={styles.avatarAI}><Robot size={18} color="var(--primary)" /></div>
                         )}
                         <div className={styles.messageContent}>
                             <div className={styles.messageBubble}>
@@ -109,7 +110,7 @@ export default function AskPanel({ historyId, initialSuggestions }: AskPanelProp
 
                 {loading && (
                     <div className={`${styles.message} ${styles.assistantMessage}`}>
-                        <div className={styles.avatarAI}>🤖</div>
+                        <div className={styles.avatarAI}><Robot size={18} color="var(--primary)" /></div>
                         <div className={styles.messageContent}>
                             <div className={`${styles.messageBubble} ${styles.thinking}`}>
                                 <span className={styles.dot}></span>
@@ -150,7 +151,7 @@ export default function AskPanel({ historyId, initialSuggestions }: AskPanelProp
                     className={styles.sendBtn}
                     disabled={!input.trim() || loading}
                 >
-                    ↑
+                    <Send size={18} color="white" />
                 </button>
             </form>
         </div>

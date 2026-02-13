@@ -431,3 +431,169 @@ export function ArrowRight({ size = 24, color = 'currentColor', className }: Ico
     );
 }
 
+// ============================================
+// PLAUD ENHANCEMENT ICONS
+// ============================================
+
+// Chat Bubble
+export function ChatBubble({ size = 24, color = 'currentColor', weight = 'regular', className }: IconProps) {
+    if (weight === 'fill') {
+        return (
+            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill={color}>
+                <path d="M20 2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3l3.29 3.29a1 1 0 0 0 1.42 0L15 18h5a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z" />
+            </svg>
+        );
+    }
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z" />
+        </svg>
+    );
+}
+
+// Download
+export function Download({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+    );
+}
+
+// Star
+export function Star({ size = 24, color = 'currentColor', weight = 'regular', className }: IconProps) {
+    if (weight === 'fill') {
+        return (
+            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill={color}>
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" />
+            </svg>
+        );
+    }
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" />
+        </svg>
+    );
+}
+
+// Sparkle (AI / Magic)
+export function Sparkle({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 3l1.8 5.4L19 10l-5.2 3.8L15.2 19 12 16.2 8.8 19l1.4-5.2L5 10l5.2-1.6L12 3Z" />
+            <line x1="19" y1="2" x2="19" y2="4" />
+            <line x1="18" y1="3" x2="20" y2="3" />
+            <line x1="4" y1="4" x2="4" y2="6" />
+            <line x1="3" y1="5" x2="5" y2="5" />
+        </svg>
+    );
+}
+
+// ListChecks (Action Items / Checklist)
+export function ListChecks({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3.5 5.5L5 7l2.5-3" />
+            <path d="M3.5 11.5L5 13l2.5-3" />
+            <path d="M3.5 17.5L5 19l2.5-3" />
+            <line x1="11" y1="6" x2="21" y2="6" />
+            <line x1="11" y1="12" x2="21" y2="12" />
+            <line x1="11" y1="18" x2="21" y2="18" />
+        </svg>
+    );
+}
+
+// ClipboardText (Minutes / Summary)
+export function ClipboardText({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+            <line x1="8" y1="10" x2="16" y2="10" />
+            <line x1="8" y1="14" x2="16" y2="14" />
+            <line x1="8" y1="18" x2="12" y2="18" />
+        </svg>
+    );
+}
+
+// QuestionCircle (Q&A)
+export function QuestionCircle({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+    );
+}
+
+// FileText (Plain text)
+export function FileText({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+        </svg>
+    );
+}
+
+// ArrowLeft (Back)
+export function ArrowLeft({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+        </svg>
+    );
+}
+
+// Send (Chat input)
+export function Send({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+    );
+}
+
+// Hash (Markdown)
+export function Hash({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" y1="9" x2="20" y2="9" />
+            <line x1="4" y1="15" x2="20" y2="15" />
+            <line x1="10" y1="3" x2="8" y2="21" />
+            <line x1="16" y1="3" x2="14" y2="21" />
+        </svg>
+    );
+}
+
+// Lightbulb (Key Points)
+export function Lightbulb({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 18h6" />
+            <path d="M10 22h4" />
+            <path d="M12 2a7 7 0 0 0-4 12.73V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.27A7 7 0 0 0 12 2Z" />
+        </svg>
+    );
+}
+
+// Robot (AI Assistant)
+export function Robot({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="8" width="18" height="12" rx="2" />
+            <line x1="12" y1="3" x2="12" y2="8" />
+            <circle cx="12" cy="3" r="1" />
+            <circle cx="9" cy="14" r="1.5" />
+            <circle cx="15" cy="14" r="1.5" />
+            <path d="M9 18h6" />
+        </svg>
+    );
+}
