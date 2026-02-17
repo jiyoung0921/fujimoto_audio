@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { HistoryItem } from '@/types';
-import { MusicNote, Document, Trash, Pencil, Check, X, ExternalLink, Inbox, ClipboardText } from './Icons';
+import { MusicNote, Document, Trash, Pencil, Check, X, ExternalLink, Inbox, ClipboardText, ChevronRight } from './Icons';
 import SearchBar from './SearchBar';
 import AudioPlayer from './AudioPlayer';
 import { useRouter } from 'next/navigation';
@@ -150,12 +150,6 @@ export default function HistoryList() {
                         <div
                             key={item.id}
                             className={styles.item}
-                            onClick={() => {
-                                if (editingId !== item.id) {
-                                    router.push(`/history/${item.id}`);
-                                }
-                            }}
-                            style={{ cursor: editingId === item.id ? 'default' : 'pointer' }}
                         >
                             <div className={styles.itemHeader}>
                                 <div className={styles.fileIcon}>
@@ -237,23 +231,33 @@ export default function HistoryList() {
                             </div>
 
                             <div className={styles.itemFooter}>
-                                <a
-                                    href={item.docxFileUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={styles.openButton}
-                                >
-                                    <Document size={18} />
-                                    <span>DOCX</span>
-                                    <ExternalLink size={14} />
-                                </a>
                                 <button
-                                    onClick={() => handleDelete(item.id)}
-                                    className={styles.deleteButton}
-                                    aria-label="削除"
+                                    onClick={() => router.push(`/history/${item.id}`)}
+                                    className={styles.detailButton}
                                 >
-                                    <Trash size={18} />
+                                    <span>詳細を見る</span>
+                                    <ChevronRight size={16} />
                                 </button>
+                                <div className={styles.footerActions}>
+                                    <a
+                                        href={item.docxFileUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.openButton}
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <Document size={18} />
+                                        <span>DOCX</span>
+                                        <ExternalLink size={14} />
+                                    </a>
+                                    <button
+                                        onClick={() => handleDelete(item.id)}
+                                        className={styles.deleteButton}
+                                        aria-label="削除"
+                                    >
+                                        <Trash size={18} />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}

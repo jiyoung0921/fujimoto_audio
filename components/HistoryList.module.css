@@ -210,9 +210,41 @@
 .itemFooter {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--space-2);
     margin-top: var(--space-3);
     margin-left: 52px;
+}
+
+.detailButton {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-4);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-pill);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 201, 167, 0.25);
+}
+
+.detailButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 201, 167, 0.35);
+}
+
+.detailButton:active {
+    transform: translateY(0);
+}
+
+.footerActions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
 }
 
 .openButton {
@@ -220,8 +252,8 @@
     align-items: center;
     gap: var(--space-2);
     padding: var(--space-2) var(--space-3);
-    background: var(--primary);
-    color: white;
+    background: var(--gray-100);
+    color: var(--text-secondary);
     border-radius: var(--border-radius-md);
     font-size: 13px;
     font-weight: 600;
@@ -230,7 +262,8 @@
 }
 
 .openButton:hover {
-    background: var(--primary-dark);
+    background: var(--gray-200);
+    color: var(--text-primary);
 }
 
 .deleteButton {
@@ -265,5 +298,14 @@
 
     .fileIcon {
         display: none;
+    }
+
+    .itemFooter {
+        flex-wrap: wrap;
+    }
+
+    .detailButton {
+        width: 100%;
+        justify-content: center;
     }
 }
