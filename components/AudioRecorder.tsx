@@ -2,8 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { generateFilename } from '@/lib/utils';
-import { Microphone, StopCircle, PauseCircle, PlayCircle, Star } from './Icons';
+import { Microphone, StopCircle, PauseCircle, PlayCircle, Star, Monitor, MicMonitor } from './Icons';
 import styles from './AudioRecorder.module.css';
+
+type RecordingMode = 'mic' | 'screen' | 'both';
 
 interface AudioRecorderProps {
     onRecordingComplete: (blob: Blob, filename: string) => void;
@@ -15,11 +17,23 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
     const [recordingTime, setRecordingTime] = useState(0);
     const [highlights, setHighlights] = useState<number[]>([]);
     const [highlightFlash, setHighlightFlash] = useState(false);
+    const [recordingMode, setRecordingMode] = useState<RecordingMode>('mic');
+    const [isMobile, setIsMobile] = useState(false);
+    const [activeMode, setActiveMode] = useState<RecordingMode | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const streamsRef = useRef<MediaStream[]>([]);
+    const audioContextRef = useRef<AudioContext | null>(null);
 
     useEffect(() => {
+        // Detect mobile (getDisplayMedia not supported on mobile)
+        const checkMobile = () => {
+            const ua = navigator.userAgent;
+            setIsMobile(/iPhone|iPad|iPod|Android/i.test(ua));
+        };
+        checkMobile();
+
         return () => {
             if (timerRef.current) {
                 clearInterval(timerRef.current);
@@ -27,10 +41,77 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
         };
     }, []);
 
+    const cleanupStreams = () => {
+        streamsRef.current.forEach(stream => {
+            stream.getTracks().forEach(track => track.stop());
+        });
+        streamsRef.current = [];
+        if (audioContextRef.current) {
+            audioContextRef.current.close();
+            audioContextRef.current = null;
+        }
+    };
+
+    const getMicStream = async (): Promise<MediaStream> => {
+        return await navigator.mediaDevices.getUserMedia({ audio: true });
+    };
+
+    const getScreenStream = async (): Promise<MediaStream> => {
+        // Chrome requires video: true for getDisplayMedia, but we only use audio
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+            audio: true,
+            video: true,
+        });
+        // Stop video tracks immediately - we only need audio
+        stream.getVideoTracks().forEach(track => track.stop());
+        return stream;
+    };
+
+    const mixStreams = (streams: MediaStream[]): MediaStream => {
+        const audioContext = new AudioContext();
+        audioContextRef.current = audioContext;
+        const destination = audioContext.createMediaStreamDestination();
+
+        streams.forEach(stream => {
+            const source = audioContext.createMediaStreamSource(stream);
+            source.connect(destination);
+        });
+
+        return destination.stream;
+    };
+
     const startRecording = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mediaRecorder = new MediaRecorder(stream);
+            let recordStream: MediaStream;
+
+            if (recordingMode === 'mic') {
+                recordStream = await getMicStream();
+                streamsRef.current = [recordStream];
+            } else if (recordingMode === 'screen') {
+                const screenStream = await getScreenStream();
+                // Check if we actually got audio tracks
+                if (screenStream.getAudioTracks().length === 0) {
+                    alert('画面共有で「音声を共有」にチェックを入れてください。\n\nChromeの場合: 画面共有ダイアログで「タブの音声を共有」をオンにしてください。');
+                    screenStream.getTracks().forEach(t => t.stop());
+                    return;
+                }
+                recordStream = screenStream;
+                streamsRef.current = [screenStream];
+            } else {
+                // Both: mic + screen
+                const micStream = await getMicStream();
+                const screenStream = await getScreenStream();
+                if (screenStream.getAudioTracks().length === 0) {
+                    alert('画面共有で「音声を共有」にチェックを入れてください。');
+                    screenStream.getTracks().forEach(t => t.stop());
+                    micStream.getTracks().forEach(t => t.stop());
+                    return;
+                }
+                streamsRef.current = [micStream, screenStream];
+                recordStream = mixStreams([micStream, screenStream]);
+            }
+
+            const mediaRecorder = new MediaRecorder(recordStream);
             mediaRecorderRef.current = mediaRecorder;
             chunksRef.current = [];
 
@@ -44,21 +125,39 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
                 const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
                 const filename = generateFilename();
                 onRecordingComplete(blob, filename);
-                stream.getTracks().forEach((track) => track.stop());
+                cleanupStreams();
             };
+
+            // Listen for screen share ending (user clicks "Stop sharing")
+            if (recordingMode !== 'mic') {
+                const screenStream = streamsRef.current[recordingMode === 'screen' ? 0 : 1];
+                screenStream.getTracks().forEach(track => {
+                    track.onended = () => {
+                        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+                            stopRecording();
+                        }
+                    };
+                });
+            }
 
             mediaRecorder.start();
             setIsRecording(true);
             setIsPaused(false);
             setRecordingTime(0);
             setHighlights([]);
+            setActiveMode(recordingMode);
 
             timerRef.current = setInterval(() => {
                 setRecordingTime((prev) => prev + 1);
             }, 1000);
         } catch (error) {
-            console.error('Error accessing microphone:', error);
-            alert('マイクへのアクセスに失敗しました');
+            console.error('Recording error:', error);
+            cleanupStreams();
+            if (recordingMode === 'mic') {
+                alert('マイクへのアクセスに失敗しました');
+            } else {
+                alert('画面共有がキャンセルされました');
+            }
         }
     };
 
@@ -88,6 +187,7 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
             setIsRecording(false);
             setIsPaused(false);
             setRecordingTime(0);
+            setActiveMode(null);
             if (timerRef.current) {
                 clearInterval(timerRef.current);
             }
@@ -106,14 +206,54 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
         setTimeout(() => setHighlightFlash(false), 600);
     };
 
-    // Not recording state - show large mic button
+    // Not recording state - show mode selector + mic button
     if (!isRecording) {
         return (
             <div className={styles.recorder}>
+                {/* Recording Mode Selector */}
+                {!isMobile && (
+                    <div className={styles.modeSelector}>
+                        <button
+                            className={`${styles.modeButton} ${recordingMode === 'mic' ? styles.modeActive : ''}`}
+                            onClick={() => setRecordingMode('mic')}
+                        >
+                            <Microphone size={18} />
+                            <span>マイク</span>
+                        </button>
+                        <button
+                            className={`${styles.modeButton} ${recordingMode === 'screen' ? styles.modeActive : ''}`}
+                            onClick={() => setRecordingMode('screen')}
+                        >
+                            <Monitor size={18} />
+                            <span>画面音声</span>
+                        </button>
+                        <button
+                            className={`${styles.modeButton} ${recordingMode === 'both' ? styles.modeActive : ''}`}
+                            onClick={() => setRecordingMode('both')}
+                        >
+                            <MicMonitor size={18} />
+                            <span>両方</span>
+                        </button>
+                    </div>
+                )}
+
                 <button className={styles.mainButton} onClick={startRecording}>
-                    <Microphone size={48} weight="fill" />
+                    {recordingMode === 'mic' && <Microphone size={48} weight="fill" />}
+                    {recordingMode === 'screen' && <Monitor size={48} />}
+                    {recordingMode === 'both' && <MicMonitor size={48} />}
                 </button>
-                <p className={styles.hint}>タップして録音開始</p>
+
+                <p className={styles.hint}>
+                    {recordingMode === 'mic' && 'タップして録音開始'}
+                    {recordingMode === 'screen' && '画面音声を録音（Zoom等）'}
+                    {recordingMode === 'both' && 'マイク + 画面音声を同時録音'}
+                </p>
+
+                {recordingMode !== 'mic' && (
+                    <p className={styles.modeHint}>
+                        💡 画面共有ダイアログで「タブの音声を共有」をオンにしてください
+                    </p>
+                )}
             </div>
         );
     }
@@ -121,6 +261,14 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
     // Recording state - Apple Voice Memos style
     return (
         <div className={styles.recorder}>
+            {/* Active mode indicator */}
+            {activeMode && activeMode !== 'mic' && (
+                <div className={styles.modeIndicator}>
+                    {activeMode === 'screen' ? <Monitor size={14} /> : <MicMonitor size={14} />}
+                    <span>{activeMode === 'screen' ? '画面音声を録音中' : 'マイク + 画面音声'}</span>
+                </div>
+            )}
+
             {/* Waveform visualization */}
             <div className={styles.waveformArea}>
                 <div className={`${styles.waveform} ${isPaused ? styles.paused : ''}`}>

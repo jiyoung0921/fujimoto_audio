@@ -606,3 +606,29 @@ export function ChevronRight({ size = 24, color = 'currentColor', className }: I
         </svg>
     );
 }
+
+// Monitor (Screen/System Audio)
+export function Monitor({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8" />
+            <path d="M12 17v4" />
+            <path d="M9 10l2 2 4-4" />
+        </svg>
+    );
+}
+
+// Microphone + Monitor combined
+export function MicMonitor({ size = 24, color = 'currentColor', className }: IconProps) {
+    return (
+        <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="6" y="2" width="14" height="10" rx="1.5" />
+            <path d="M10 16h8" />
+            <path d="M14 12v4" />
+            <path d="M3 12v1a2 2 0 0 0 2 2h1" />
+            <path d="M3.5 8a1 1 0 0 1 1-1h0a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h0a1 1 0 0 1-1-1V8Z" />
+        </svg>
+    );
+}
+
