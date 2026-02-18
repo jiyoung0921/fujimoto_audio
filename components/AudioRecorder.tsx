@@ -64,7 +64,9 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
         });
         // Stop video tracks immediately - we only need audio
         stream.getVideoTracks().forEach(track => track.stop());
-        return stream;
+        // Create a new audio-only stream to avoid video data in the recording
+        const audioOnlyStream = new MediaStream(stream.getAudioTracks());
+        return audioOnlyStream;
     };
 
     const mixStreams = (streams: MediaStream[]): MediaStream => {
@@ -95,7 +97,8 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
                     screenStream.getTracks().forEach(t => t.stop());
                     return;
                 }
-                recordStream = screenStream;
+                // Use AudioContext to ensure clean audio-only stream
+                recordStream = mixStreams([screenStream]);
                 streamsRef.current = [screenStream];
             } else {
                 // Both: mic + screen
@@ -111,7 +114,13 @@ export default function AudioRecorder({ onRecordingComplete }: AudioRecorderProp
                 recordStream = mixStreams([micStream, screenStream]);
             }
 
-            const mediaRecorder = new MediaRecorder(recordStream);
+            // Use audio-specific MIME type to ensure no video data
+            const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+                ? 'audio/webm;codecs=opus'
+                : MediaRecorder.isTypeSupported('audio/webm')
+                    ? 'audio/webm'
+                    : undefined;
+            const mediaRecorder = new MediaRecorder(recordStream, mimeType ? { mimeType } : undefined);
             mediaRecorderRef.current = mediaRecorder;
             chunksRef.current = [];
 
