@@ -1,5 +1,5 @@
 /* =========================================
-   HistoryList - Apple Files Style
+   HistoryList - Duolingo Style
    ========================================= */
 
 .loading {
@@ -20,7 +20,7 @@
 
 .empty p {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 800;
     color: var(--text-primary);
     margin: 0;
 }
@@ -28,27 +28,29 @@
 .empty span {
     font-size: 14px;
     color: var(--text-muted);
+    font-weight: 700;
 }
 
 /* List */
 .list {
     display: flex;
     flex-direction: column;
+    gap: var(--space-3);
 }
 
-/* Item */
+/* Item - Duolingo card style */
 .item {
     padding: var(--space-4);
-    border-bottom: 1px solid var(--gray-100);
-    transition: background 0.15s ease;
-}
-
-.item:last-child {
-    border-bottom: none;
+    background: var(--bg-primary);
+    border: 2px solid var(--gray-100);
+    border-bottom: 4px solid var(--gray-200);
+    border-radius: var(--border-radius-lg);
+    transition: all 0.15s ease;
 }
 
 .item:hover {
-    background: var(--gray-50, #FAFAFA);
+    border-color: var(--gray-200);
+    transform: translateY(-1px);
 }
 
 /* Header */
@@ -63,7 +65,7 @@
     width: 40px;
     height: 40px;
     border-radius: var(--border-radius-md);
-    background: rgba(0, 201, 167, 0.1);
+    background: rgba(88, 204, 2, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -77,7 +79,7 @@
 
 .filename {
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 800;
     color: var(--text-primary);
     margin: 0 0 var(--space-1) 0;
     display: flex;

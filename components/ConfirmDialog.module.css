@@ -1,3 +1,7 @@
+/* =========================================
+   Confirm Dialog - Duolingo Style
+   ========================================= */
+
 .overlay {
     position: fixed;
     top: 0;
@@ -14,64 +18,81 @@
 }
 
 .dialog {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 24px;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-xl);
+    padding: var(--space-6);
     max-width: 400px;
     width: 90%;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 2px solid var(--gray-100);
+    border-bottom: 4px solid var(--gray-200);
     animation: slideUp 0.3s ease-out;
 }
 
 .title {
-    margin: 0 0 12px 0;
-    font-size: 20px;
-    font-weight: 600;
+    margin: 0 0 var(--space-3) 0;
+    font-size: 22px;
+    font-weight: 800;
     color: var(--text-primary);
 }
 
 .message {
-    margin: 0 0 24px 0;
+    margin: 0 0 var(--space-6) 0;
     font-size: 15px;
-    color: #2D3436;
-    /* Darker text for better readability */
-    line-height: 1.5;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-weight: 600;
 }
 
 .actions {
     display: flex;
-    gap: 12px;
-    justify-content: flex-end;
+    gap: var(--space-3);
+    justify-content: stretch;
 }
 
 .cancelBtn,
 .confirmBtn {
-    padding: 10px 20px;
-    border-radius: 8px;
+    flex: 1;
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--border-radius-lg);
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 800;
     cursor: pointer;
     border: none;
-    transition: all 0.2s;
+    transition: all 0.15s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .cancelBtn {
-    background: var(--button-secondary-bg);
-    color: var(--text-primary);
+    background: var(--gray-100);
+    color: var(--text-secondary);
+    border: 2px solid var(--gray-200);
+    border-bottom: 3px solid var(--gray-300);
 }
 
 .cancelBtn:hover {
-    background: var(--button-secondary-hover);
+    background: var(--gray-200);
+}
+
+.cancelBtn:active {
+    transform: translateY(1px);
+    border-bottom-width: 2px;
 }
 
 .confirmBtn {
     background: var(--danger);
     color: white;
+    box-shadow: 0 3px 0 #CC3C3C;
 }
 
 .confirmBtn:hover {
-    background: var(--danger-hover);
     transform: translateY(-1px);
+    box-shadow: 0 4px 0 #CC3C3C;
+}
+
+.confirmBtn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #CC3C3C;
 }
 
 @keyframes fadeIn {

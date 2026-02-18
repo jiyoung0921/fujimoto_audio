@@ -1,5 +1,5 @@
 /* =========================================
-   Bottom Navigation - iOS Style
+   Bottom Navigation - Duolingo Style
    ========================================= */
 
 .bottomNav {
@@ -8,7 +8,7 @@
     left: 0;
     right: 0;
     background: var(--bg-primary);
-    border-top: 1px solid var(--border-color);
+    border-top: 2px solid var(--gray-100);
     z-index: 100;
     padding-bottom: env(safe-area-inset-bottom, 0);
 }
@@ -19,28 +19,41 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: var(--space-2) 0;
+    padding: var(--space-2) 0 var(--space-1);
 }
 
 .navItem {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-2) var(--space-4);
+    gap: 2px;
+    padding: var(--space-2) var(--space-5);
     text-decoration: none;
-    color: var(--text-muted);
-    transition: color var(--transition-fast);
-    border-radius: var(--border-radius-md);
-    min-width: 64px;
+    color: var(--gray-400);
+    transition: all var(--transition-fast);
+    border-radius: var(--border-radius-lg);
+    min-width: 72px;
+    position: relative;
 }
 
 .navItem:hover {
-    color: var(--text-secondary);
+    color: var(--gray-600);
 }
 
 .navItem.active {
-    color: var(--primary);
+    color: var(--secondary);
+}
+
+.navItem.active::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 3px;
+    background: var(--secondary);
+    border-radius: 0 0 3px 3px;
 }
 
 .navItem.active .icon {
@@ -53,17 +66,10 @@
 
 .label {
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 800;
     text-align: center;
-}
-
-/* Recording Tab Special Style */
-.navItem:nth-child(2) {
-    position: relative;
-}
-
-.navItem:nth-child(2).active {
-    color: var(--secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 /* =========================================

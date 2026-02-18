@@ -1,5 +1,5 @@
 /* =========================================
-   FileUploader - Warm Minimalist
+   FileUploader - Duolingo Style
    ========================================= */
 
 .container {
@@ -7,23 +7,23 @@
 }
 
 .dropzone {
-    border: 2px dashed var(--gray-300);
+    border: 3px dashed var(--gray-200);
     border-radius: var(--border-radius-xl);
     padding: var(--space-8) var(--space-5);
     text-align: center;
     transition: all var(--transition-fast);
-    background: var(--gray-100);
+    background: var(--off-white);
     cursor: pointer;
 }
 
 .dropzone:hover {
     border-color: var(--primary);
-    background: rgba(0, 201, 167, 0.04);
+    background: rgba(88, 204, 2, 0.04);
 }
 
 .dropzone.dragging {
     border-color: var(--primary);
-    background: rgba(0, 201, 167, 0.08);
+    background: rgba(88, 204, 2, 0.08);
     border-style: solid;
     transform: scale(1.01);
 }
@@ -39,13 +39,14 @@
     align-items: center;
     justify-content: center;
     color: var(--primary);
-    box-shadow: var(--shadow-sm);
+    border: 2px solid var(--gray-100);
+    border-bottom: 3px solid var(--gray-200);
 }
 
 /* Text */
 .title {
     font-size: 17px;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--text-primary);
     margin-bottom: var(--space-1);
 }
@@ -54,6 +55,7 @@
     font-size: 14px;
     color: var(--text-muted);
     margin-bottom: var(--space-4);
+    font-weight: 700;
 }
 
 /* Select Button */
@@ -69,7 +71,9 @@
 .formats {
     font-size: 12px;
     color: var(--text-muted);
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* =========================================

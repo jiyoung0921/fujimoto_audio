@@ -1,5 +1,5 @@
 /* =========================================
-   Home Page - Apple Style
+   Home Page - Duolingo Style
    ========================================= */
 
 .loading {
@@ -10,7 +10,7 @@
 }
 
 /* =========================================
-   Welcome Screen (Not Logged In)
+   Welcome Screen - Duolingo Onboarding Style
    ========================================= */
 
 .welcome {
@@ -20,38 +20,53 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: var(--space-6);
+    padding: var(--space-8);
 }
 
 .welcomeIcon {
     width: 120px;
     height: 120px;
-    border-radius: 30px;
-    background: linear-gradient(180deg, #00C9A7 0%, #00A389 100%);
+    border-radius: 32px;
+    background: var(--primary);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    margin-bottom: var(--space-5);
-    box-shadow: 0 8px 32px rgba(0, 201, 167, 0.3);
+    margin-bottom: var(--space-6);
+    box-shadow: 0 8px 0 var(--primary-dark);
+    animation: welcomeBounce 2s ease-in-out infinite;
+}
+
+@keyframes welcomeBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
 }
 
 .welcomeTitle {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--text-primary);
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--primary);
     margin-bottom: var(--space-2);
+    letter-spacing: -1px;
 }
 
 .welcomeText {
-    font-size: 16px;
-    color: var(--text-muted);
-    margin-bottom: var(--space-6);
+    font-size: 17px;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-8);
+    font-weight: 700;
 }
 
 .welcomeFeatures {
     display: flex;
-    gap: var(--space-6);
+    gap: var(--space-5);
     margin-bottom: var(--space-8);
 }
 
@@ -61,44 +76,52 @@
     align-items: center;
     gap: var(--space-2);
     color: var(--text-secondary);
+    background: var(--bg-primary);
+    padding: var(--space-4);
+    border-radius: var(--border-radius-xl);
+    border: 2px solid var(--gray-100);
+    border-bottom: 4px solid var(--gray-200);
+    min-width: 90px;
 }
 
 .feature span {
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .welcomeHint {
-    margin-top: var(--space-6);
-    padding: var(--space-5) var(--space-6);
+    padding: var(--space-4) var(--space-8);
     background: var(--primary);
     color: white;
     border: none;
     border-radius: var(--border-radius-full);
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 800;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-3);
-    box-shadow: 0 4px 0 var(--primary-dark);
+    box-shadow: 0 5px 0 var(--primary-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .welcomeHint:hover {
-    background: var(--primary-light);
     transform: translateY(-2px);
-    box-shadow: 0 6px 0 var(--primary-dark);
+    box-shadow: 0 7px 0 var(--primary-dark);
 }
 
 .welcomeHint:active {
-    transform: translateY(2px);
+    transform: translateY(3px);
     box-shadow: 0 2px 0 var(--primary-dark);
 }
 
 /* =========================================
-   Main Page
+   Main Page - Duolingo Section Cards
    ========================================= */
 
 .page {
@@ -122,45 +145,50 @@
 }
 
 .sectionHeader h2 {
-    font-size: 17px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 800;
     margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .card {
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 2px solid var(--gray-100);
+    border-bottom: 4px solid var(--gray-200);
     border-radius: var(--border-radius-xl);
-    padding: var(--space-4);
+    padding: var(--space-5);
 }
 
-/* Divider */
+/* Divider - Duolingo style */
 .divider {
     display: flex;
     align-items: center;
     gap: var(--space-4);
     color: var(--text-muted);
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 12px;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
 .divider::before,
 .divider::after {
     content: '';
     flex: 1;
-    height: 1px;
-    background: var(--gray-200);
+    height: 2px;
+    background: var(--gray-100);
+    border-radius: 1px;
 }
 
 /* =========================================
-   Result Section
+   Result Section - Duolingo celebration
    ========================================= */
 
 .resultSection {
-    background: rgba(0, 184, 148, 0.06);
-    border: 1px solid var(--success);
+    background: rgba(88, 204, 2, 0.06);
+    border: 2px solid var(--primary);
+    border-bottom: 4px solid var(--primary-dark);
     border-radius: var(--border-radius-xl);
     padding: var(--space-5);
 }
@@ -173,14 +201,14 @@
 }
 
 .resultHeader h2 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--success);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary);
     margin: 0;
 }
 
 .successIcon {
-    color: var(--success);
+    color: var(--primary);
 }
 
 .transcriptionBox {
@@ -188,7 +216,7 @@
     border-radius: var(--border-radius-lg);
     padding: var(--space-4);
     margin-bottom: var(--space-4);
-    border: 1px solid var(--gray-200);
+    border: 2px solid var(--gray-100);
 }
 
 .transcriptionBox p {
@@ -197,6 +225,7 @@
     color: var(--text-primary);
     white-space: pre-wrap;
     margin: 0;
+    font-weight: 600;
 }
 
 /* =========================================
@@ -224,6 +253,11 @@
     }
 
     .welcomeFeatures {
-        gap: var(--space-5);
+        gap: var(--space-4);
+    }
+
+    .feature {
+        min-width: 80px;
+        padding: var(--space-3);
     }
 }
