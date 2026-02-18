@@ -221,24 +221,25 @@
     align-items: center;
     gap: var(--space-1);
     padding: var(--space-2) var(--space-4);
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    background: var(--primary);
     color: white;
     border: none;
     border-radius: var(--border-radius-pill);
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 201, 167, 0.25);
+    transition: all 0.15s ease;
+    box-shadow: 0 3px 0 var(--primary-dark);
 }
 
 .detailButton:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 201, 167, 0.35);
+    box-shadow: 0 4px 0 var(--primary-dark);
 }
 
 .detailButton:active {
-    transform: translateY(0);
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--primary-dark);
 }
 
 .footerActions {
