@@ -1,73 +1,143 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleAIFileManager, FileState } from '@google/generative-ai/server';
 import { google } from 'googleapis';
 import { promises as fs } from 'fs';
 
-// Gemini 2.5 Flash for Audio Transcription
+// Threshold: Files larger than this use File API instead of inline base64
+// Gemini inline limit is 20MB base64, so we use File API for anything over 15MB raw
+const FILE_API_THRESHOLD_BYTES = 15 * 1024 * 1024; // 15MB
+
+// Gemini 2.5 Flash for Audio Transcription - supports up to 9.5 hours of audio
 export async function transcribeAudio(audioFilePath: string): Promise<string> {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-    // Using Gemini 2.5 Flash for audio transcription
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-    try {
-        // Read audio file
-        const audioData = await fs.readFile(audioFilePath);
-        const base64Audio = audioData.toString('base64');
-
-        // Determine MIME type based on file extension
-        const ext = audioFilePath.toLowerCase().split('.').pop();
-        let mimeType = 'audio/webm';
-        if (ext === 'mp3') mimeType = 'audio/mp3';
-        else if (ext === 'm4a') mimeType = 'audio/mp4';
-        else if (ext === 'wav') mimeType = 'audio/wav';
-        else if (ext === 'ogg') mimeType = 'audio/ogg';
-
-        // Generate content with audio
-        const result = await model.generateContent([
-            {
-                inlineData: {
-                    data: base64Audio,
-                    mimeType: mimeType,
-                },
-            },
-            `この音声ファイルに含まれる発話内容を正確に書き起こしてください。
+    const TRANSCRIPTION_PROMPT = `この音声ファイルに含まれる発話内容を正確に書き起こしてください。
 
 指示:
 - 音声に含まれる発話のみを出力してください
 - 句読点を適切に付けて読みやすく整形してください
 - 音声が聞き取れない場合や無音の場合は「（音声なし）」とだけ出力してください
 - このプロンプト（指示文）は絶対に出力に含めないでください
-- 余計な説明や注釈は不要です。発話内容のみを出力してください`,
-        ]);
+- 余計な説明や注釈は不要です。発話内容のみを出力してください`;
 
-        const response = await result.response;
-        let transcription = response.text();
+    // Determine MIME type based on file extension
+    const ext = audioFilePath.toLowerCase().split('.').pop();
+    let mimeType: string = 'audio/webm';
+    if (ext === 'mp3') mimeType = 'audio/mp3';
+    else if (ext === 'm4a') mimeType = 'audio/mp4';
+    else if (ext === 'mp4') mimeType = 'audio/mp4';
+    else if (ext === 'wav') mimeType = 'audio/wav';
+    else if (ext === 'ogg') mimeType = 'audio/ogg';
+    else if (ext === 'webm') mimeType = 'audio/webm';
+
+    try {
+        const stats = await fs.stat(audioFilePath);
+        const fileSizeBytes = stats.size;
+        console.log(`[transcribeAudio] File size: ${(fileSizeBytes / 1024 / 1024).toFixed(2)} MB, MIME: ${mimeType}`);
+
+        let transcription: string;
+
+        if (fileSizeBytes > FILE_API_THRESHOLD_BYTES) {
+            // --- Large file: use Gemini File API ---
+            console.log('[transcribeAudio] Using Gemini File API for large file...');
+            transcription = await transcribeWithFileAPI(audioFilePath, mimeType, model, TRANSCRIPTION_PROMPT);
+        } else {
+            // --- Small file: use inline base64 (faster, no extra API call) ---
+            console.log('[transcribeAudio] Using inline base64 for small file...');
+            const audioData = await fs.readFile(audioFilePath);
+            const base64Audio = audioData.toString('base64');
+
+            const result = await model.generateContent([
+                { inlineData: { data: base64Audio, mimeType } },
+                TRANSCRIPTION_PROMPT,
+            ]);
+            const response = await result.response;
+            transcription = response.text();
+        }
 
         if (!transcription || transcription.trim() === '') {
             return '（音声なし）';
         }
 
-        // Filter out any accidental prompt leakage
-        if (transcription.includes('この音声ファイル') ||
-            transcription.includes('書き起こし') ||
-            transcription.includes('指示:')) {
+        // Filter out accidental prompt leakage
+        const leakagePatterns = ['この音声ファイル', '書き起こし', '指示:', 'TRANSCRIPTION_PROMPT'];
+        if (leakagePatterns.some(p => transcription.includes(p))) {
+            console.warn('[transcribeAudio] Possible prompt leakage detected, returning empty result');
             return '（音声なし）';
         }
 
         return transcription.trim();
     } catch (error) {
-        console.error('Transcription error in google-apis.ts:', error);
-        console.error('Error details:', {
-            message: error instanceof Error ? error.message : 'Unknown error',
-            stack: error instanceof Error ? error.stack : undefined,
-            audioFilePath,
-        });
-
+        console.error('[transcribeAudio] Error:', error);
         if (error instanceof Error) {
-            throw error; // 元のエラーを投げて、より詳細な情報を保持
+            throw error;
         }
         throw new Error('文字起こしに失敗しました');
     }
 }
+
+/**
+ * Upload file to Gemini File API, wait for processing, then transcribe.
+ * Supports audio files up to 9.5 hours / ~2GB.
+ */
+async function transcribeWithFileAPI(
+    audioFilePath: string,
+    mimeType: string,
+    model: any,
+    prompt: string
+): Promise<string> {
+    const fileManager = new GoogleAIFileManager(process.env.GEMINI_API_KEY!);
+
+    let uploadedFile: any = null;
+    try {
+        // Upload the file
+        console.log('[FileAPI] Uploading file to Gemini File API...');
+        const uploadResult = await fileManager.uploadFile(audioFilePath, {
+            mimeType,
+            displayName: `audio_${Date.now()}`,
+        });
+        uploadedFile = uploadResult.file;
+        console.log(`[FileAPI] File uploaded: ${uploadedFile.name}, state: ${uploadedFile.state}`);
+
+        // Poll until file is ACTIVE (processing can take 10-60s for large files)
+        let file = uploadedFile;
+        let attempts = 0;
+        const MAX_POLL_ATTEMPTS = 60; // 60 * 5s = 5 minutes max wait
+        while (file.state === FileState.PROCESSING) {
+            if (attempts >= MAX_POLL_ATTEMPTS) {
+                throw new Error('Gemini File APIの処理がタイムアウトしました（5分超過）');
+            }
+            await new Promise(r => setTimeout(r, 5000)); // Wait 5 seconds
+            file = await fileManager.getFile(file.name);
+            attempts++;
+            console.log(`[FileAPI] File state: ${file.state} (attempt ${attempts}/${MAX_POLL_ATTEMPTS})`);
+        }
+
+        if (file.state === FileState.FAILED) {
+            throw new Error('Gemini File APIでの音声処理に失敗しました');
+        }
+
+        // Transcribe using the File API URI
+        console.log('[FileAPI] Starting transcription...');
+        const result = await model.generateContent([
+            { fileData: { mimeType: file.mimeType, fileUri: file.uri } },
+            prompt,
+        ]);
+        const response = await result.response;
+        const transcription = response.text();
+        console.log(`[FileAPI] Transcription complete: ${transcription.length} chars`);
+        return transcription;
+    } finally {
+        // Always clean up the uploaded file from Gemini servers
+        if (uploadedFile?.name) {
+            fileManager.deleteFile(uploadedFile.name).catch(err => {
+                console.warn('[FileAPI] Failed to delete uploaded file:', err);
+            });
+        }
+    }
+}
+
 
 // AI Summary and Structure Generation
 export async function summarizeAndStructure(text: string): Promise<{

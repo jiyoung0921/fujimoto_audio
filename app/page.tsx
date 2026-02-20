@@ -28,6 +28,76 @@ export default function Home({ onTabChange }: HomeProps = {}) {
         docxUrl: string;
     } | null>(null);
 
+    // Safe JSON parser - prevents ERR_UNKNOWN when server returns non-JSON (e.g. Vercel's "Request Entity Too Large")
+    const safeParseJSON = async (response: Response): Promise<any> => {
+        const text = await response.text();
+        try {
+            return JSON.parse(text);
+        } catch {
+            // Server returned non-JSON (e.g. nginx/Vercel error page)
+            const snippet = text.substring(0, 120);
+            throw {
+                code: response.status === 413 ? 'ERR_FILE_TOO_LARGE' : 'ERR_SERVER',
+                message: response.status === 413
+                    ? 'ファイルが大きすぎます。チャンクアップロードを使用してください。'
+                    : `サーバーエラー (HTTP ${response.status}): ${snippet}`,
+            };
+        }
+    };
+
+    // Chunked upload: splits file into 4MB chunks and uploads sequentially
+    const uploadFileInChunks = async (
+        file: File | Blob,
+        filename: string,
+        onProgress: (received: number, total: number) => void
+    ): Promise<string> => {
+        const CHUNK_SIZE = 4 * 1024 * 1024; // 4MB per chunk (well below Vercel's 4.5MB limit)
+        const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+        const uploadId = `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+
+        console.log(`[ChunkUpload] Starting: ${filename}, size=${(file.size / 1024 / 1024).toFixed(1)}MB, chunks=${totalChunks}`);
+
+        for (let i = 0; i < totalChunks; i++) {
+            const start = i * CHUNK_SIZE;
+            const end = Math.min(start + CHUNK_SIZE, file.size);
+            const chunk = file.slice(start, end);
+
+            const formData = new FormData();
+            formData.append('chunk', chunk, filename);
+            formData.append('chunkIndex', String(i));
+            formData.append('totalChunks', String(totalChunks));
+            formData.append('uploadId', uploadId);
+            formData.append('filename', filename);
+
+            let attempts = 0;
+            const MAX_RETRIES = 3;
+            while (attempts < MAX_RETRIES) {
+                try {
+                    const res = await fetch('/api/upload-chunk', { method: 'POST', body: formData });
+                    const data = await safeParseJSON(res);
+
+                    if (!data.success) {
+                        throw { code: 'ERR_CHUNK', message: data.error || `チャンク ${i + 1}/${totalChunks} のアップロードに失敗` };
+                    }
+
+                    onProgress(i + 1, totalChunks);
+
+                    if (data.complete) {
+                        console.log(`[ChunkUpload] Complete: ${data.filePath}`);
+                        return data.filePath;
+                    }
+                    break; // Success, move to next chunk
+                } catch (err: any) {
+                    attempts++;
+                    if (attempts >= MAX_RETRIES) throw err;
+                    console.warn(`[ChunkUpload] Chunk ${i + 1} failed (attempt ${attempts}), retrying...`, err);
+                    await new Promise(r => setTimeout(r, 1000 * attempts));
+                }
+            }
+        }
+        throw { code: 'ERR_UPLOAD', message: 'チャンクアップロードが完了しませんでした' };
+    };
+
     const handleFileProcess = async (file: File | Blob, filename: string) => {
         setIsProcessing(true);
         setResult(null);
@@ -36,31 +106,24 @@ export default function Home({ onTabChange }: HomeProps = {}) {
         try {
             setProcessingStatus({
                 step: 'upload',
-                progress: 10,
-                message: 'ファイルをアップロード中...',
+                progress: 5,
+                message: 'ファイルをアップロード中... (0%)',
             });
 
-            const formData = new FormData();
-            formData.append('file', file, filename);
-
-            const uploadResponse = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
+            // Use chunked upload for all files to avoid Vercel size limits
+            const filePath = await uploadFileInChunks(file, filename, (received, total) => {
+                const pct = Math.round((received / total) * 25); // 0-25% for upload phase
+                setProcessingStatus({
+                    step: 'upload',
+                    progress: 5 + pct,
+                    message: `アップロード中... ${received}/${total} チャンク`,
+                });
             });
-
-            const uploadData = await uploadResponse.json();
-
-            if (!uploadData.success) {
-                throw {
-                    code: 'ERR_UPLOAD',
-                    message: uploadData.error || 'アップロードに失敗しました',
-                };
-            }
 
             setProcessingStatus({
                 step: 'transcribe',
                 progress: 30,
-                message: 'AIが文字起こし中...',
+                message: 'AIが文字起こし中... (大きなファイルは数分かかります)',
             });
 
             const selectedFolderId = localStorage.getItem('selectedDriveFolderId') || '';
@@ -69,7 +132,7 @@ export default function Home({ onTabChange }: HomeProps = {}) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    filePath: uploadData.filePath,
+                    filePath,
                     originalName: filename,
                     fileType: file.type || 'audio/webm',
                     fileSize: file.size,
@@ -77,7 +140,7 @@ export default function Home({ onTabChange }: HomeProps = {}) {
                 }),
             });
 
-            const transcribeData = await transcribeResponse.json();
+            const transcribeData = await safeParseJSON(transcribeResponse);
 
             if (!transcribeData.success) {
                 throw {
@@ -99,7 +162,6 @@ export default function Home({ onTabChange }: HomeProps = {}) {
 
             setTimeout(() => {
                 setIsProcessing(false);
-                // Auto navigate to history tab after recording completes
                 if (onTabChange) {
                     onTabChange('history');
                 }

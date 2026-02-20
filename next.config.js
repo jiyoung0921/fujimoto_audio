@@ -8,8 +8,15 @@ const nextConfig = {
     },
     experimental: {
         serverActions: {
-            bodySizeLimit: '50mb',
+            bodySizeLimit: '500mb',
         },
+    },
+    // API Route body size limit for large audio file uploads
+    api: {
+        bodyParser: {
+            sizeLimit: '500mb',
+        },
+        responseLimit: false,
     },
     webpack: (config, { isServer }) => {
         if (isServer) {

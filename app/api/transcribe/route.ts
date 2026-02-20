@@ -10,6 +10,9 @@ import { TranscribeResponse } from '@/types';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getDefaultTemplate } from '@/lib/summary-templates';
 
+// Vercel max execution time (300s = 5 min for Pro, 60s for Hobby)
+export const maxDuration = 300;
+
 export async function POST(request: NextRequest): Promise<NextResponse<TranscribeResponse>> {
     try {
         const session = await getServerSession(authOptions);
